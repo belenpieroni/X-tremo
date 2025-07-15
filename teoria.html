@@ -7,127 +7,16 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap">
   <link rel="stylesheet" href="css/x-tremo.css">
   <link rel="icon" href="imagenes/favicon.ico" type="image/x-icon">
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
+  <section class="info-teoria">
+    <div class="container">
+      <h3>Extremos relativos</h3>
+    </div>
+    <div class="container">
+      <h3>Extremos absolutos</h3>
+    </div>
+  </section>
   <script src="js/app.js"></script>
-
-  <section class="info hidden">
-    <div class="container">
-      <h3>¿Qué es un decibel?</h3>
-      <p>El decibel (dB) es una unidad logarítmica que compara dos valores de potencia, tensión o corriente. No mide valores absolutos, sino <strong>relaciones</strong>. Esto la vuelve especialmente útil en telecomunicaciones, donde las señales varían en órdenes de magnitud.</p>
-      <p>Por ejemplo, si una señal se amplifica 10 veces en potencia, su ganancia en decibeles será:</p>
-      <div class="equation-box">
-        <p>\[
-        G(dB) = 10 \cdot \log_{10}\left(\frac{10}{1}\right) = 10\, dB
-        \]</p>
-      </div>
-      <aside class="tip">
-        ¿Por qué se usa 10 o 20 en la fórmula?  
-        Para potencia se usa <code>10 × log</code> porque la potencia está relacionada con el cuadrado de la tensión o corriente. Por eso, para tensión o corriente usamos <code>20 × log</code>.
-      </aside>
-    </div>
-  </section>
-
-  <section class="info hidden">
-    <div class="container">
-      <h3>Atenuadores vs. Amplificadores</h3>
-      <p>Los <strong>amplificadores</strong> y <strong>atenuadores</strong> son dispositivos que modifican la magnitud de una señal eléctrica. La diferencia clave radica en su efecto sobre la señal:</p>
-
-      <ul>
-        <li><strong>Amplificadores:</strong> Aumentan la amplitud o potencia de la señal. Se usan para compensar pérdidas o adaptar una señal débil a un nivel útil.</li>
-        <li><strong>Atenuadores:</strong> Disminuyen la amplitud o potencia. Se utilizan para proteger etapas sensibles, igualar niveles de señal o evitar distorsiones.</li>
-      </ul>
-
-      <h4>Ejemplos comunes</h4>
-      <ul>
-        <li><strong>Amplificador de audio:</strong> Eleva la señal proveniente de un celular o tocadiscos antes de enviarla a los parlantes.</li>
-        <li><strong>Amplificador de antena:</strong> Mejora la recepción de señal en televisores o radios.</li>
-        <li><strong>Atenuador de RF:</strong> Reduce la intensidad de señales en sistemas de radiofrecuencia para evitar saturación.</li>
-        <li><strong>Atenuadores ópticos:</strong> En redes de fibra óptica, regulan la señal de luz para evitar errores.</li>
-      </ul>
-
-      <h4>¿Qué provoca una ganancia o pérdida?</h4>
-      <p>Las señales se amplifican o se atenúan debido a varios factores físicos:</p>
-      <ul>
-        <li><strong>Ganancia:</strong> Proviene de dispositivos activos que introducen energía al sistema, como micrófonos o circuitos operacionales con alimentación externa.</li>
-        <li><strong>Pérdida:</strong> Es natural en cables, conectores o componentes pasivos, donde parte de la energía se disipa como calor o se refleja.</li>
-      </ul>
-
-      <aside class="tip">
-        Un amplificador no “crea” señal mágica: solo transfiere energía desde su fuente de alimentación hacia la señal. Sin esa fuente, no hay ganancia posible.
-      </aside>
-    </div>
-  </section>
-
-  <section class="info hidden">
-    <div class="container">
-      <h3>Ganancia y pérdida</h3>
-      <p>Una señal tiene <strong>ganancia</strong> cuando aumenta respecto a su valor original (dB positivos), y <strong>pérdida</strong> cuando disminuye (dB negativos).</p>
-
-      <h4>Fórmulas de ganancia:</h4>
-      <ul>
-        <li><strong>Potencia:</strong> \(\ G(dB) = 10 \cdot \log_{10}\left(\frac{P_s}{P_e}\right)\ \)</li>
-        <li><strong>Tensión:</strong> \(\ G(dB) = 20 \cdot \log_{10}\left(\frac{V_s}{V_e}\right)\ \)</li>
-        <li><strong>Corriente:</strong> \(\ G(dB) = 20 \cdot \log_{10}\left(\frac{I_s}{I_e}\right)\ \)</li>
-      </ul>
-
-      <h4>Fórmulas de pérdida:</h4>
-      <ul>
-        <li><strong>Potencia:</strong> \(\ P(dB) = 10 \cdot \log_{10}\left(\frac{P_e}{P_s}\right)\ \)</li>
-        <li><strong>Tensión:</strong> \(\ P(dB) = 20 \cdot \log_{10}\left(\frac{V_e}{V_s}\right)\ \)</li>
-        <li><strong>Corriente:</strong> \(\ P(dB) = 20 \cdot \log_{10}\left(\frac{I_e}{I_s}\right)\ \)</li>
-      </ul>
-
-      <p>Ejemplo práctico: si una señal de 1W se amplifica a con un dispositivo de 30dB de ganancia, la salida será:</p>
-      <div class="equation-box">
-        <p>\[
-        30 dB = 10 \cdot \log_{10}\left(\frac{Ps}{1 W}\right) 
-        \]</p>
-        <p>\[
-          Ps = 1000\, W
-        \]</p>
-      </div>
-    </div>
-  </section>
-
-  <section class="info hidden">
-    <div class="container">
-      <h3>Aplicaciones reales del decibel</h3>
-      <ul>
-        <li><strong>Redes de datos:</strong> el nivel de potencia en enlaces de fibra se mide en dBm.</li>
-        <li><strong>Audio:</strong> los ecualizadores muestran cambios en dB sobre frecuencias específicas.</li>
-        <li><strong>Electrónica:</strong> análisis de filtros, amplificadores y atenuadores.</li>
-      </ul>
-      <p>Comprender los decibeles permite diagnosticar pérdidas, diseñar sistemas balanceados y comunicar especificaciones técnicas de forma estándar.</p>
-    </div>
-  </section>
-  
-  <script>
-    const blocks = document.querySelectorAll('.info');
-
-    blocks.forEach(block => {
-      block.classList.add('hidden'); 
-    });
-
-    const observer = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-        entry.target.classList.add('show');
-        } else {
-          entry.target.classList.remove('show');
-        }
-      });
-    }, {
-      threshold: 0.3
-    });
-
-    blocks.forEach(block => {
-      observer.observe(block);
-    });
-  </script>
-
-
 </body>
 </html>

@@ -1,31 +1,47 @@
-// CARGA HEADER
 document.addEventListener("DOMContentLoaded", function () {
+    // Header
     fetch("./componentes/header.html")
         .then(response => response.text())
         .then(data => {
             const headerWrapper = document.createElement("div");
             headerWrapper.innerHTML = data;
-
-            // Insertar en el DOM
             document.body.insertAdjacentElement("afterbegin", headerWrapper);
-
-            // Solo agregar hamburger en pantallas pequeñas
-            if (window.innerWidth <= 768) {
-                const hamburger = document.createElement("button");
-                hamburger.id = "desplegable";
-                hamburger.classList.add("hamburger");
-                hamburger.innerHTML = "&#9776;";
-
-                const headerElement = headerWrapper.querySelector("#header .container");
-                if (headerElement) {
-                    headerElement.appendChild(hamburger);
-                }
-            }
-
             personalizarHeader();
-            inicializarHamburger(); // separado para claridad
         })
         .catch(error => console.error("Error al cargar el header:", error));
+
+    // Sidebar Botones
+    const btnRelativos = document.getElementById("btn-relativos");
+    const btnAbsolutos = document.getElementById("btn-absolutos");
+    const contenido = document.getElementById("contenido-principal");
+
+    if (btnRelativos) {
+        btnRelativos.addEventListener("click", function () {
+            cargarContenido("componentes/relativos.html");
+        });
+    }
+
+    if (btnAbsolutos) {
+        btnAbsolutos.addEventListener("click", function () {
+            cargarContenido("componentes/absolutos.html");
+        });
+    }
+
+    function cargarContenido(ruta) {
+        fetch(ruta)
+            .then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el contenido.");
+                return response.text();
+            })
+            .then(data => {
+                contenido.innerHTML = data;
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            })
+            .catch(error => {
+                contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
+                console.error(error);
+            });
+    }
 });
 
 // PERSONALIZAR HEADER
@@ -34,7 +50,6 @@ function personalizarHeader() {
     if (!navList) return;
 
     navList.innerHTML = "";
-
     const path = window.location.pathname;
     const isIndex = path.endsWith("/") || path.endsWith("index.html");
     const isTeoria = path.includes("teoria.html");
@@ -42,42 +57,14 @@ function personalizarHeader() {
     let enlaces = [];
 
     if (isIndex) {
-        enlaces = [
-            { texto: "Teoría", href: "teoria.html" },
-            { texto: "Características", href: "#info" },
-        ];
+        enlaces = [{ texto: "Teoría", href: "teoria.html" }];
     } else if (isTeoria) {
-        enlaces = [
-            { texto: "Inicio", href: "index.html" },
-        ];
+        enlaces = [{ texto: "Inicio", href: "index.html" }];
     }
 
     enlaces.forEach(enlace => {
         const li = document.createElement("li");
         li.innerHTML = `<a href="${enlace.href}">${enlace.texto}</a>`;
         navList.appendChild(li);
-    });
-}
-
-// INICIALIZAR FUNCIONALIDAD HAMBURGER
-function inicializarHamburger() {
-    const toggleBtn = document.getElementById("desplegable");
-    const sidebar = document.getElementById("sidebar");
-
-    if (toggleBtn && sidebar) {
-        toggleBtn.addEventListener("click", () => {
-            sidebar.classList.toggle("active");
-        });
-    }
-}
-
-// BOTÓN TEORÍA (con validación)
-const btnTeoria = document.getElementById("btn-teoria");
-if (btnTeoria) {
-    btnTeoria.addEventListener("click", () => {
-        document.getElementById("contenido-principal").innerHTML = `
-            <h2>📖 Teoría de Extremos</h2>
-            <p>Los extremos relativos se encuentran analizando los puntos críticos...</p>
-        `;
     });
 }
