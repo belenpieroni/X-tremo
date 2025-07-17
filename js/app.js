@@ -300,100 +300,36 @@ function graficarFuncion(f, label, puntosCriticos = []) {
 
 /* CÁLCULO EXTREMOS ABSOLUTOS */
 function analizarAbsolutos() {
-    const fStr = document.getElementById("fxy").value;
-    const gStr = document.getElementById("gxy").value;
+    const fStrRaw = document.getElementById("fxy").value;
+    const gStrRaw = document.getElementById("gxy").value;
     const resultadosDiv = document.getElementById("resultados-lagrange");
-    resultadosDiv.innerHTML = "<p>Calculando puntos críticos con Lagrange...</p>";
+
+    resultadosDiv.innerHTML = "<p>Calculando gradientes con math.js...</p>";
 
     try {
+        // Normalizar expresión para evitar errores de parsing
+        const fExpr = math.parse(fStrRaw);
+        const gExpr = math.parse(gStrRaw);
+
         // Derivadas parciales
-        const fx = nerdamer(`diff(${fStr}, x)`).toString();
-        const fy = nerdamer(`diff(${fStr}, y)`).toString();
-        const gx = nerdamer(`diff(${gStr}, x)`).toString();
-        const gy = nerdamer(`diff(${gStr}, y)`).toString();
+        const fx = math.derivative(fExpr, 'x').toString();
+        const fy = math.derivative(fExpr, 'y').toString();
+        const gx = math.derivative(gExpr, 'x').toString();
+        const gy = math.derivative(gExpr, 'y').toString();
 
-        // Ecuación de Lagrange sin lambda
-        const lagrangeEq = nerdamer(`${fx}*(${gy}) - (${fy})*(${gx})`).expand().toString();
-
-        // Resolver respecto a y
-        let ySolutions = [];
-        try {
-            const eq = nerdamer(`${lagrangeEq}=0`);
-            const raw = nerdamer.solve(eq.text(), 'y');
-            ySolutions = Array.isArray(raw) ? raw : [raw];
-        } catch (e) {
-            console.warn("Lagrange equation could not be solved:", e);
-        }
-
-
-        const puntos = [];
-
-        ySolutions.forEach(yExprRaw => {
-            try {
-                const yExpr = nerdamer(yExprRaw); // mantener como expresión simbólica
-
-                // Sustituir en g(x, y) = 0 → obtener expresión solo en x
-                const gExpr = nerdamer(gStr); // expresión original
-                const gSubY = gExpr.substitute("y", yExpr).expand().toString();
-
-                // Resolver g(x, yExpr) = 0 → despejar x
-                const xSolutionsRaw = nerdamer.solve(`${gSubY}=0`, 'x');
-                const xSolutions = Array.isArray(xSolutionsRaw) ? xSolutionsRaw : [xSolutionsRaw];
-
-                xSolutions.forEach(xExprRaw => {
-                    try {
-                        const xVal = parseFloat(nerdamer(xExprRaw).evaluate().text());
-                        const yVal = parseFloat(yExpr.evaluate({ x: xVal }).text());
-                        const fVal = parseFloat(nerdamer(fStr, { x: xVal, y: yVal }).evaluate().text());
-
-                        if (isFinite(xVal) && isFinite(yVal) && isFinite(fVal)) {
-                            puntos.push({ x: xVal, y: yVal, f: fVal });
-                        }
-                    } catch (e) {
-                        console.warn("No se pudo evaluar un punto:", xExprRaw, yExpr.toString());
-                    }
-                });
-            } catch (e) {
-                console.warn("No se pudo procesar la solución de y:", yExprRaw);
-            }
-        });
-
-        if (puntos.length === 0) {
-            resultadosDiv.innerHTML = "<p>No se encontraron puntos críticos bajo la restricción.</p>";
-            return;
-        }
-
-        const maxPunto = puntos.reduce((a, b) => (a.f > b.f ? a : b));
-        const minPunto = puntos.reduce((a, b) => (a.f < b.f ? a : b));
-
+        // Mostrar resultados
         let html = `
-            <p><strong>f(x,y):</strong> ${fStr}</p>
-            <p><strong>Restricción g(x,y):</strong> ${gStr} = 0</p>
-            <p><strong>Derivadas parciales:</strong><br>
-            f<sub>x</sub> = ${fx}<br>
-            f<sub>y</sub> = ${fy}<br>
-            g<sub>x</sub> = ${gx}<br>
-            g<sub>y</sub> = ${gy}</p>
-            <p><strong>Puntos candidatos obtenidos:</strong></p>
-            <ul>
+            <p><strong>f(x,y):</strong> ${fStrRaw}</p>
+            <p><strong>g(x,y):</strong> ${gStrRaw} = 0</p>
+            <p><strong>Gradiente de f:</strong><br>
+            ∇f = (${fx}) i + (${fy}) j</p>
+            <p><strong>Gradiente de g:</strong><br>
+            ∇g = (${gx}) i + (${gy}) j</p>
         `;
-
-        puntos.forEach(p => {
-            const tipo = (p.x === maxPunto.x && p.y === maxPunto.y)
-                ? "→ máximo absoluto"
-                : (p.x === minPunto.x && p.y === minPunto.y)
-                ? "→ mínimo absoluto"
-                : "";
-
-            html += `<li>(x, y) = (${formatearNumero(p.x)}, ${formatearNumero(p.y)}) → f = ${formatearNumero(p.f)} ${tipo}</li>`;
-        });
-
-        html += "</ul><p><em>Clasificación basada en el valor de f(x, y) evaluado sobre la restricción.</em></p>";
-
         resultadosDiv.innerHTML = html;
 
     } catch (error) {
-        console.error("Error en cálculo Lagrange:", error);
-        resultadosDiv.innerHTML = "<p>No se pudo calcular los puntos críticos. Verifica las expresiones ingresadas.</p>";
+        console.error("Error al calcular gradientes:", error);
+        resultadosDiv.innerHTML = "<p> Error al calcular gradientes. Verifica las expresiones ingresadas.</p>";
     }
 }

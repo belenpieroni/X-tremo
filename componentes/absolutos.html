@@ -1,21 +1,16 @@
 <section class="modulo-absolutos">
-  <h2>Análisis de Extremos Absolutos</h2>
-  <p>Ingresa una función para analizar sus extremos absolutos:</p>
+    <h2>Análisis de Extremos Absolutos</h2>
+    <p>Ingresa una función para analizar sus extremos absolutos:</p>
 
-  <form id="form-lagrange">
-    <div class="campo">
-      <label for="fxy">Función f(x, y):</label>
-      <input type="text" id="fxy" placeholder="Ej: x^2 + y^2" required />
-    </div>
+    <form id="form-lagrange">
+        <label for="fxy">Función f(x, y):</label>
+        <input type="text" id="fxy" required />
+        <label for="gxy">Restricción g(x, y):</label>
+        <input type="text" id="gxy" required />
+        <button type="submit">Analizar</button>
+    </form>
 
-    <div class="campo">
-      <label for="gxy">Restricción g(x, y) = 0:</label>
-      <input type="text" id="gxy" placeholder="Ej: x + y - 1" required />
-    </div>
 
-    <button class="btn" type="submit">Analizar</button>
-  </form>
-
-  <div id="resultados-lagrange"></div>
-  <canvas id="grafico-funcion"></canvas>
+    <div id="resultados-lagrange"></div>
+    <canvas id="grafico-funcion"></canvas>
 </section>
