@@ -71,7 +71,7 @@ header .container {
   filter: invert(1);
 }
 
-/**/
+/* Links */
 nav ul {
   list-style: none; 
   display: flex; 
