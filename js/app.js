@@ -1,3 +1,12 @@
+import {
+    clasificarExtremo,
+    clasificarPunto,
+    personalizarHeader,
+    formatearNumero,
+    graficarRelativos2Var,
+    encontrarCeros
+} from './XtremoUtils.js';
+
 document.addEventListener("DOMContentLoaded", function () {
     // Header
     fetch("./componentes/header.html")
@@ -6,9 +15,18 @@ document.addEventListener("DOMContentLoaded", function () {
             const headerWrapper = document.createElement("div");
             headerWrapper.innerHTML = data;
             document.body.insertAdjacentElement("afterbegin", headerWrapper);
-            personalizarHeader();
+
+            // Esperar a que #nav-list exista antes de personalizar
+            const observer = new MutationObserver(() => {
+                const navList = document.getElementById("nav-list");
+                if (navList) {
+                    personalizarHeader(); // ✅ solo cuando nav-list esté disponible
+                    observer.disconnect(); // dejar de observar
+                }
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
         })
-        .catch(error => console.error("Error al cargar el header:", error));
 
     // Sidebar Botones y contenido principal
     const btnRelativos = document.getElementById("btn-relativos");
@@ -16,34 +34,40 @@ document.addEventListener("DOMContentLoaded", function () {
     const contenido = document.getElementById("contenido-principal");
 
     function cargarContenido(ruta) {
-        fetch(ruta)
-            .then(response => {
-                if (!response.ok) throw new Error("No se pudo cargar el contenido.");
-                return response.text();
-            })
-            .then(data => {
-                contenido.innerHTML = data;
-                window.scrollTo({ top: 0, behavior: "smooth" });
+    fetch(ruta)
+        .then(response => {
+            if (!response.ok) throw new Error("No se pudo cargar el contenido.");
+            return response.text();
+        })
+        .then(data => {
+            contenido.innerHTML = data;
+            window.scrollTo({ top: 0, behavior: "smooth" });
 
-                const btnAnalizar = document.getElementById("analizarBtn");
-                if (btnAnalizar) {
-                    btnAnalizar.addEventListener("click", function () {
-                        analizarRelativos();
-                    });
-                }
+            // Aquí engancha el listener al botón que justo fue insertado:
+            const btnAnalizar = document.getElementById("analizarBtn");
+            if (btnAnalizar) {
+                btnAnalizar.addEventListener("click", function () {
+                    const modo2vars = document.getElementById("modo2vars")?.checked ?? false;
+                    if (modo2vars) {
+                        analizarRelativos2Var();
+                    } else {
+                        analizarRelativos1Var();
+                    }
+                });
+            }
 
-                const formLagrange = document.getElementById("form-lagrange");
-                if (formLagrange) {
-                    formLagrange.addEventListener("submit", function (e) {
-                        e.preventDefault();
-                        analizarAbsolutos();
-                    });
-                }
-            })
-            .catch(error => {
-                contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
-                console.error(error);
-            });
+            const formLagrange = document.getElementById("form-lagrange");
+            if (formLagrange) {
+                formLagrange.addEventListener("submit", function (e) {
+                    e.preventDefault();
+                    analizarAbsolutos();
+                });
+            }
+        })
+        .catch(error => {
+            contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
+            console.error(error);
+        });
     }
 
     // Ahora conectamos los botones
@@ -60,38 +84,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// PERSONALIZAR HEADER
-function personalizarHeader() {
-    const navList = document.getElementById("nav-list");
-    if (!navList) return;
-
-    navList.innerHTML = "";
-    const path = window.location.pathname;
-    const isIndex = path.endsWith("/") || path.endsWith("index.html");
-    const isTeoria = path.includes("teoria.html");
-
-    let enlaces = [];
-
-    if (isIndex) {
-        enlaces = [{ texto: "Teoría", href: "teoria.html" }];
-    } else if (isTeoria) {
-        enlaces = [{ texto: "Inicio", href: "index.html" }];
-    }
-
-    enlaces.forEach(enlace => {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${enlace.href}">${enlace.texto}</a>`;
-        navList.appendChild(li);
-    });
-}
-
-function formatearNumero(num) {
-    return Number.isInteger(num) ? num.toString() : num.toFixed(4);
-}
-
-
-/* CÁLCULO DE EXTREMOS RELATIVOS */
-function analizarRelativos() {
+/* CÁLCULO DE EXTREMOS RELATIVOS 1 VARIABLE*/
+function analizarRelativos1Var() {
     const funcionStr = document.getElementById("funcion-input").value;
     const resultadosDiv = document.getElementById("resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
@@ -165,37 +159,92 @@ function analizarRelativos() {
     }
 }
 
-/* Detectar raíces para f'(x) */
-function encontrarCeros(f1) {
-    const ceros = [];
-    const precision = 1e-6;
-    const maxIter = 100;
+/* CÁLCULO DE EXTREMOS RELATIVOS 2 VARIABLES */
+function analizarRelativos2Var() {
+    const funcionStr = document.getElementById("funcion-input").value;
+    const resultadosDiv = document.getElementById("resultados");
+    resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
-    for (let x = -10; x < 10; x += 0.1) {
-        let a = x;
-        let b = x + 0.1;
-        let fa = f1.evaluate({ x: a });
-        let fb = f1.evaluate({ x: b });
+    try {
+        const fExpr = math.parse(funcionStr);
 
-        if (fa * fb < 0) {
-            let iter = 0;
-            while (Math.abs(b - a) > precision && iter < maxIter) {
-                let c = (a + b) / 2;
-                let fc = f1.evaluate({ x: c });
-                if (fa * fc < 0) {
-                    b = c;
-                    fb = fc;
-                } else {
-                    a = c;
-                    fa = fc;
-                }
-                iter++;
+        // Derivadas parciales y segundas
+        const fxExpr = math.derivative(fExpr, 'x');
+        const fyExpr = math.derivative(fExpr, 'y');
+        const fxxExpr = math.derivative(fxExpr, 'x');
+        const fyyExpr = math.derivative(fyExpr, 'y');
+        const fxyExpr = math.derivative(fxExpr, 'y');
+
+        const fx = fxExpr.compile();
+        const fy = fyExpr.compile();
+        const fxx = fxxExpr.compile();
+        const fyy = fyyExpr.compile();
+        const fxy = fxyExpr.compile();
+        const f = math.compile(funcionStr);
+
+        const puntosCriticos = [];
+
+        // Escaneo de grilla
+        for (let x = -3; x <= 3; x += 0.1) {
+            for (let y = -3; y <= 3; y += 0.1) {
+                try {
+                    const fxVal = fx.evaluate({ x, y });
+                    const fyVal = fy.evaluate({ x, y });
+                    if (Math.abs(fxVal) < 1e-2 && Math.abs(fyVal) < 1e-2) {
+                        const xR = Number(x.toFixed(3));
+                        const yR = Number(y.toFixed(3));
+                        if (!puntosCriticos.some(p => Math.abs(p.x - xR) < 1e-3 && Math.abs(p.y - yR) < 1e-3)) {
+                            puntosCriticos.push({ x: xR, y: yR });
+                        }
+                    }
+                } catch { /* ignorar errores */ }
             }
-            let raiz = Number(((a + b) / 2).toFixed(6));
-            if (!ceros.includes(raiz)) ceros.push(raiz);
         }
+
+        // Construcción de salida
+        let html = `<p><strong>Función:</strong> f(x, y) = ${funcionStr}</p>`;
+        html += `<p><strong>Primera derivada respecto a x:</strong> ${fxExpr.toString()} = 0</p>`;
+        html += `<p><strong>Primera derivada respecto a y:</strong> ${fyExpr.toString()} = 0</p>`;
+
+        if (puntosCriticos.length === 0) {
+            html += `<p>No se encontraron puntos críticos.</p>`;
+            resultadosDiv.innerHTML = html;
+            return;
+        }
+
+        html += `<h4>Puntos encontrados:</h4><ul>`;
+        puntosCriticos.forEach(p => {
+            html += `<li>(x, y) = (${p.x}, ${p.y})</li>`;
+        });
+        html += `</ul>`;
+
+        html += `<h4>Construcción de g(x, y)</h4>`;
+        html += `<p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>`;
+        html += `<p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>`;
+        html += `<p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>`;
+        html += `<p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>`;
+        html += `<p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>`;
+
+        html += `<h4>Evaluación en cada punto:</h4><ul>`;
+        puntosCriticos.forEach(p => {
+            const { tipo, clasificacion, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
+            html += `<li>
+                <strong>Punto:</strong> (${p.x}, ${p.y})<br>
+                g = ${formatearNumero(d)} ⇒ ${tipo}<br>
+                ${clasificacion ? clasificacion : ""}
+            </li>`;
+        });
+        html += `</ul>`;
+
+        resultadosDiv.innerHTML = html;
+        graficarRelativos2Var(funcionStr, puntosCriticos.map(p => ({
+            x: p.x,
+            y: p.y,
+            tipo: "punto crítico"
+        })));
+    } catch (error) {
+        resultadosDiv.innerHTML = `<p>⚠️ Error al calcular: ${error.message}</p>`;
     }
-    return ceros;
 }
 
 /* Realizar gráfico */
@@ -297,6 +346,8 @@ function graficarFuncion(f, label, puntosCriticos = []) {
         }
     });
 }
+
+
 
 /* CÁLCULO EXTREMOS ABSOLUTOS */
 function analizarAbsolutos() {

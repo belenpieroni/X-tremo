@@ -2,11 +2,19 @@
   <h2>Análisis de Extremos Relativos</h2>
   <p>Ingresa una función para analizar sus extremos relativos:</p>
   <form id="form-funcion">
-    <label for="funcion-input">Función f(x,y):</label>
-    <input type="text" id="funcion-input" placeholder="Ej: x^2 + x*y + y^2" />
+    <label for="funcion-input">Función f:</label>
+    <input type="text" id="funcion-input" placeholder="Ej: x^3-3x+2" />
+
+    <label>
+      <input type="checkbox" id="modo2vars" />
+      Analizar en dos variables (x, y)
+    </label>
+
     <button id="analizarBtn" class="btn" type="button">Analizar</button>
   </form>
 
   <div id="resultados" class="resultados"></div>
   <canvas id="grafico-funcion"></canvas>
+  <div id="grafico-3d" style="width: 100%; height: 500px;"></div>
 </section>
+
