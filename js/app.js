@@ -12,21 +12,12 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch("./componentes/header.html")
         .then(response => response.text())
         .then(data => {
-            const headerWrapper = document.createElement("div");
-            headerWrapper.innerHTML = data;
-            document.body.insertAdjacentElement("afterbegin", headerWrapper);
-
-            // Esperar a que #nav-list exista antes de personalizar
-            const observer = new MutationObserver(() => {
-                const navList = document.getElementById("nav-list");
-                if (navList) {
-                    personalizarHeader(); // ✅ solo cuando nav-list esté disponible
-                    observer.disconnect(); // dejar de observar
-                }
-            });
-
-            observer.observe(document.body, { childList: true, subtree: true });
+            document.getElementById("header-placeholder").innerHTML = data;
+            personalizarHeader();
         })
+        .catch(error => {
+            console.error("Error al cargar el header:", error);
+        });
 
     // Sidebar Botones y contenido principal
     const btnRelativos = document.getElementById("btn-relativos");

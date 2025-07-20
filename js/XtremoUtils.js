@@ -1,27 +1,28 @@
 // XtremoUtils.js
 
 export function personalizarHeader() {
-    const navList = document.getElementById("nav-list");
-    if (!navList) return;
+    const contenedor = document.getElementById("header-dinamico");
+    if (!contenedor) return;
 
-    navList.innerHTML = "";
+    contenedor.innerHTML = "";
+
     const path = window.location.pathname;
     const isIndex = path.endsWith("/") || path.endsWith("index.html");
     const isTeoria = path.includes("teoria.html");
 
-    let enlaces = [];
-
     if (isIndex) {
-        enlaces = [{ texto: "Teoría", href: "teoria.html" }];
+        contenedor.innerHTML = `
+            <a href="teoria.html" class="teoria-link">
+                <img src="imagenes/gorrito.png" alt="Teoría">
+                <span>Teoría</span>
+            </a>`;
     } else if (isTeoria) {
-        enlaces = [{ texto: "Inicio", href: "index.html" }];
+        contenedor.innerHTML = `
+            <a href="index.html" class="inicio-link">
+                <img src="imagenes/calculadora.png" alt="Inicio">
+                <span>Inicio</span>
+            </a>`;
     }
-
-    enlaces.forEach(enlace => {
-        const li = document.createElement("li");
-        li.innerHTML = `<a href="${enlace.href}">${enlace.texto}</a>`;
-        navList.appendChild(li);
-    });
 }
 
 export function clasificarExtremo(fxxVal) {
