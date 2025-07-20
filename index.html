@@ -17,12 +17,21 @@
   <div id="header-placeholder"></div>
   <div class="principal-container">
     <aside class="sidebar" id="sidebar">
-        <nav>
+      <button id="toggle-sidebar" class="menu-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M3.75 6.75h16.5M3.75 12h16.5M3.75 17.25h16.5" />
+        </svg>
+        <span>Menú</span>
+      </button>
+      <nav id="sidebar-nav">
         <ul>
-            <li><button id="btn-relativos">Extremos Relativos</button></li>
-            <li><button id="btn-absolutos">Extremos Absolutos</button></li>
+          <li><button id="btn-relativos">Extremos Relativos</button></li>
+          <li><button id="btn-absolutos">Extremos Absolutos</button></li>
         </ul>
-        </nav>
+      </nav>
     </aside>
     <main>
         <section id="contenido-principal"></section>

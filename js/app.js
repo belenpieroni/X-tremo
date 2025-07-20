@@ -73,6 +73,17 @@ document.addEventListener("DOMContentLoaded", function () {
             cargarContenido("componentes/absolutos.html");
         });
     }
+
+    // 🧩 Controlador del botón hamburguesa para sidebar responsive
+    const toggleBtn = document.getElementById("toggle-sidebar");
+    const sidebar = document.getElementById("sidebar");
+
+    if (toggleBtn && sidebar) {
+        toggleBtn.addEventListener("click", () => {
+            sidebar.classList.toggle("open");
+        });
+    }
+
 });
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 1 VARIABLE*/

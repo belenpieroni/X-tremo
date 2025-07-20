@@ -1,3 +1,5 @@
+/* relativos.css */
+
 /* Reset básico */
 * {
   margin: 0;
@@ -7,29 +9,13 @@
 
 /* Variables específicas Relativos */
 :root {
-  --relativo-primario: #15b7c0;
-  --relativo-secundario: #0a7e84;
-  --relativo-fondo: #f0fcfd;
+  --relativo-primario: #5A8F7B;       
+  --relativo-secundario: #3C6353;      
+  --relativo-fondo: #F2F7F4;            
   --texto-principal: #222;
   --gris-suave: #e8e8e8;
 }
 
-/* General */
-body {
-  font-family: 'Poppins', sans-serif;
-  line-height: 1.7;
-  font-size: 17px;
-  color: var(--texto-principal);
-  background-color: var(--relativo-fondo);
-}
-
-/* Container */
-.container {
-  width: 90%;
-  max-width: 1000px;
-  margin: auto;
-  padding: 20px;
-}
 
 /* Títulos */
 h1, h2, h3, h4 {
@@ -38,7 +24,8 @@ h1, h2, h3, h4 {
 }
 
 /* Botones */
-button, .btn {
+#contenido-principal button,
+#contenido-principal .btn {
   background-color: var(--relativo-primario);
   color: white;
   border: none;
@@ -49,12 +36,14 @@ button, .btn {
   transition: background-color 0.3s ease;
 }
 
-button:hover, .btn:hover {
+#contenido-principal button:hover,
+#contenido-principal .btn:hover {
   background-color: var(--relativo-secundario);
 }
 
 /* Inputs */
-input, textarea {
+#contenido-principal input, 
+#contenido-principal textarea {
   border: 1px solid var(--gris-suave);
   border-radius: 5px;
   padding: 8px 12px;
@@ -63,7 +52,8 @@ input, textarea {
   margin-bottom: 15px;
 }
 
-input:focus, textarea:focus {
+#contenido-principal input:focus, 
+#contenido-principal textarea:focus {
   outline: none;
   border-color: var(--relativo-primario);
 }
@@ -77,10 +67,6 @@ input:focus, textarea:focus {
   box-shadow: 0 1px 4px rgba(0,0,0,0.08);
   margin-top: 20px;
   word-wrap: break-word;
-}
-
-ul {
-  margin-left: 20px;
 }
 
 code {
