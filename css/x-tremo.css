@@ -26,9 +26,45 @@ body {
 }
 
 .container {
-  width: 90%;
+  display: flex;
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
+  padding: 20px;
+  gap: 20px;
+}
+
+.principal-container {
+  display: flex;
+  max-width: 1200px;
+  min-width: 100vh;
+}
+
+/* Main contenido desplazado */
+main {
+  margin-left: 220px;
+  flex: 1;
+  background-color: #ffffff;
+  padding: 30px;
+  min-height: 100vh;
+}
+
+/* Footer */
+footer {
+  background-color: var(--azul-oscuro);
+  color: white;
+  text-align: center;
+  padding: 20px 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+
+main {
+  flex: 1;
+  padding: 20px;
+  min-height: 80vh;
 }
 
 /* Header */
@@ -105,4 +141,3 @@ footer {
 html {
   scroll-behavior: smooth;
 }
-

@@ -1,0 +1,98 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Variables específicas Absolutos */
+:root {
+  --absoluto-primario: #d85e00;
+  --absoluto-secundario: #8f3c00;
+  --absoluto-fondo: #fff9f5;
+  --texto-principal: #222;
+  --gris-suave: #e8e8e8;
+}
+
+/* General */
+body {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.7;
+  font-size: 17px;
+  color: var(--texto-principal);
+  background-color: var(--absoluto-fondo);
+}
+
+/* Container */
+.container {
+  width: 90%;
+  max-width: 1000px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* Títulos */
+h1, h2, h3, h4 {
+  color: var(--absoluto-secundario);
+  margin-bottom: 12px;
+}
+
+/* Botones */
+button, .btn {
+  background-color: var(--absoluto-primario);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover, .btn:hover {
+  background-color: var(--absoluto-secundario);
+}
+
+/* Inputs */
+input, textarea {
+  border: 1px solid var(--gris-suave);
+  border-radius: 5px;
+  padding: 8px 12px;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+input:focus, textarea:focus {
+  outline: none;
+  border-color: var(--absoluto-primario);
+}
+
+/* Resultado */
+#resultados-lagrange {
+  background-color: white;
+  border-left: 5px solid var(--absoluto-primario);
+  padding: 15px 20px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  margin-top: 20px;
+  word-wrap: break-word;
+}
+
+ul {
+  margin-left: 20px;
+}
+
+code {
+  background: #fdf0e9;
+  padding: 2px 5px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Gráfico 3D */
+#grafico-3d {
+  width: 100%;
+  height: 500px;
+  margin-top: 20px;
+}
