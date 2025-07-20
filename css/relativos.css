@@ -82,3 +82,26 @@ code {
   height: 400px;
   margin-top: 20px;
 }
+
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  background-color: var(--relativo-primario);
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+  border: none;
+  width: max-content;
+}
+
+.toggle-btn:hover {
+  background-color: var(--relativo-secundario);
+}
+
+.toggle-btn input[type="checkbox"] {
+  display: none;
+}

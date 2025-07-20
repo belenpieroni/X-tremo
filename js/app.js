@@ -25,40 +25,63 @@ document.addEventListener("DOMContentLoaded", function () {
     const contenido = document.getElementById("contenido-principal");
 
     function cargarContenido(ruta) {
-    fetch(ruta)
-        .then(response => {
-            if (!response.ok) throw new Error("No se pudo cargar el contenido.");
-            return response.text();
-        })
-        .then(data => {
-            contenido.innerHTML = data;
-            window.scrollTo({ top: 0, behavior: "smooth" });
+        fetch(ruta)
+            .then(response => {
+                if (!response.ok) throw new Error("No se pudo cargar el contenido.");
+                return response.text();
+            })
+            .then(data => {
+                contenido.innerHTML = data;
+                window.scrollTo({ top: 0, behavior: "smooth" });
 
-            // Aquí engancha el listener al botón que justo fue insertado:
-            const btnAnalizar = document.getElementById("analizarBtn");
-            if (btnAnalizar) {
-                btnAnalizar.addEventListener("click", function () {
-                    const modo2vars = document.getElementById("modo2vars")?.checked ?? false;
-                    if (modo2vars) {
-                        analizarRelativos2Var();
+                // Listener botón Analizar
+                const btnAnalizar = document.getElementById("analizarBtn");
+                if (btnAnalizar) {
+                    btnAnalizar.addEventListener("click", function () {
+                        const modo2vars = document.getElementById("modo2vars")?.checked ?? false;
+                        if (modo2vars) {
+                            analizarRelativos2Var();
+                        } else {
+                            analizarRelativos1Var();
+                        }
+                    });
+                }
+
+                // Listener para checkbox modo2vars que cambia texto del botón
+                const checkbox = document.getElementById('modo2vars');
+                const toggleBtn = checkbox?.parentElement; // el label.toggle-btn
+                const btnText = toggleBtn?.querySelector('.btn-text');
+
+                if (checkbox && toggleBtn && btnText) {
+                // Cambia el texto según el estado
+                const updateToggleBtn = () => {
+                    if (checkbox.checked) {
+                    btnText.textContent = '2 variables';
+                    toggleBtn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-secundario').trim();
                     } else {
-                        analizarRelativos1Var();
+                    btnText.textContent = '1 variable';
+                    toggleBtn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-primario').trim();
                     }
-                });
-            }
+                };
 
-            const formLagrange = document.getElementById("form-lagrange");
-            if (formLagrange) {
-                formLagrange.addEventListener("submit", function (e) {
-                    e.preventDefault();
-                    analizarAbsolutos();
-                });
-            }
-        })
-        .catch(error => {
-            contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
-            console.error(error);
-        });
+                checkbox.addEventListener('change', updateToggleBtn);
+
+                // Inicializa el botón con el estado actual
+                updateToggleBtn();
+                }
+
+                const formLagrange = document.getElementById("form-lagrange");
+                if (formLagrange) {
+                    formLagrange.addEventListener("submit", function (e) {
+                        e.preventDefault();
+                        analizarAbsolutos();
+                    });
+                }
+            })
+            .catch(error => {
+                contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
+                console.error(error);
+            });
     }
 
     // Ahora conectamos los botones
@@ -74,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 🧩 Controlador del botón hamburguesa para sidebar responsive
+    // Controlador del botón hamburguesa para sidebar responsive
     const toggleBtn = document.getElementById("toggle-sidebar");
     const sidebar = document.getElementById("sidebar");
 
@@ -83,7 +106,6 @@ document.addEventListener("DOMContentLoaded", function () {
             sidebar.classList.toggle("open");
         });
     }
-
 });
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 1 VARIABLE*/

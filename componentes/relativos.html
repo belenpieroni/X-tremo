@@ -3,14 +3,12 @@
   <h2>Análisis de Extremos Relativos</h2>
   <p>Ingresa una función para analizar sus extremos relativos:</p>
   <form id="form-funcion">
+    <label class="toggle-btn" for="modo2vars">
+      <input type="checkbox" id="modo2vars" />
+      <span class="btn-text">1 variable</span>
+    </label><br>
     <label for="funcion-input">Función f:</label>
     <input type="text" id="funcion-input" placeholder="Ej: x^3-3x+2" />
-
-    <label>
-      <input type="checkbox" id="modo2vars" />
-      Analizar en dos variables (x, y)
-    </label>
-
     <button id="analizarBtn" class="btn" type="button">Analizar</button>
   </form>
   <div id="grafico-3d"></div>
