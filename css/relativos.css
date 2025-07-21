@@ -26,7 +26,7 @@ h1, h2, h3, h4 {
 /* Botones */
 #contenido-principal button,
 #contenido-principal .btn {
-  background-color: var(--relativo-primario);
+  background-color: var(--relativo-primario) !important;
   color: white;
   border: none;
   padding: 10px 16px;
@@ -34,11 +34,13 @@ h1, h2, h3, h4 {
   border-radius: 6px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  transition: box-shadow 0.6s ease, transform 0.3s ease;
 }
 
 #contenido-principal button:hover,
 #contenido-principal .btn:hover {
-  background-color: var(--relativo-secundario);
+  box-shadow: 0 0 12px var(--fondo-base), 0 0 24px var(--relativo-primario) !important;
+  transform: translateY(-2px);
 }
 
 /* Inputs */
