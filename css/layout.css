@@ -77,7 +77,8 @@ body {
 /* Contenedor principal con aside + main */
 .principal-container {
   display: flex;
-  flex: 1;
+  flex-grow: 1;
+  align-items: stretch;
 }
 
 /* Sidebar */
@@ -89,7 +90,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  min-height: calc(100vh - 80px); 
+  height: auto;
+  min-height: 100%;
 }
 
 /* Botón hamburguesa con texto */
@@ -158,7 +160,6 @@ main {
   flex: 1;
   padding: 40px;
   background-color: var(--fondo-base);
-  min-height: calc(100vh - 80px); 
 }
 
 html {

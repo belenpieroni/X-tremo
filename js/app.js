@@ -27,62 +27,91 @@ document.addEventListener("DOMContentLoaded", function () {
     function cargarContenido(ruta) {
         fetch(ruta)
             .then(response => {
-                if (!response.ok) throw new Error("No se pudo cargar el contenido.");
-                return response.text();
+            if (!response.ok) throw new Error("No se pudo cargar el contenido.");
+            return response.text();
             })
             .then(data => {
-                contenido.innerHTML = data;
-                window.scrollTo({ top: 0, behavior: "smooth" });
+            contenido.innerHTML = data;
+            window.scrollTo({ top: 0, behavior: "smooth" });
 
-                // Listener botón Analizar
-                const btnAnalizar = document.getElementById("analizarBtn");
-                if (btnAnalizar) {
-                    btnAnalizar.addEventListener("click", function () {
-                        const modo2vars = document.getElementById("modo2vars")?.checked ?? false;
-                        if (modo2vars) {
-                            analizarRelativos2Var();
-                        } else {
-                            analizarRelativos1Var();
-                        }
-                    });
+            // 🔄 Checkbox y campos para análisis absoluto
+            const checkboxAbs = document.getElementById('modoAbs2vars');
+            const toggleAbs = checkboxAbs?.parentElement;
+            const btnTextAbs = toggleAbs?.querySelector('.btn-text');
+            const form2vars = document.getElementById('form-2vars');
+            const form3vars = document.getElementById('form-3vars');
+
+            if (checkboxAbs && toggleAbs && btnTextAbs && form2vars && form3vars) {
+                const updateAbsToggle = () => {
+                if (checkboxAbs.checked) {
+                    btnTextAbs.textContent = '3 variables';
+                    toggleAbs.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--absoluto-secundario').trim();
+                    form2vars.style.display = 'none';
+                    form3vars.style.display = 'block';
+                } else {
+                    btnTextAbs.textContent = '2 variables';
+                    toggleAbs.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--absoluto-primario').trim();
+                    form2vars.style.display = 'block';
+                    form3vars.style.display = 'none';
                 }
+                };
 
-                // Listener para checkbox modo2vars que cambia texto del botón
-                const checkbox = document.getElementById('modo2vars');
-                const toggleBtn = checkbox?.parentElement; // el label.toggle-btn
-                const btnText = toggleBtn?.querySelector('.btn-text');
+                checkboxAbs.addEventListener('change', updateAbsToggle);
+                updateAbsToggle();
+            }
 
-                if (checkbox && toggleBtn && btnText) {
-                // Cambia el texto según el estado
+            // ✅ Escucha de análisis Absolutos según modo
+            const formLagrange = document.getElementById("form-lagrange");
+            if (formLagrange) {
+                formLagrange.addEventListener("submit", function (e) {
+                e.preventDefault();
+                const modo3vars = document.getElementById("modoAbs2vars")?.checked ?? false;
+                if (modo3vars) {
+                    analizarAbsolutos3Vars2Restricciones();
+                } else {
+                    analizarAbsolutos2Vars1Restriccion();
+                }
+                });
+            }
+
+            // ✅ Escucha botón de análisis Relativos
+            const btnAnalizar = document.getElementById("analizarBtn");
+            if (btnAnalizar) {
+                btnAnalizar.addEventListener("click", function () {
+                const modo2vars = document.getElementById("modo2vars")?.checked ?? false;
+                if (modo2vars) {
+                    analizarRelativos2Var();
+                } else {
+                    analizarRelativos1Var();
+                }
+                });
+            }
+
+            // ✅ Toggle visual en relativos
+            const checkbox = document.getElementById('modo2vars');
+            const toggleBtn = checkbox?.parentElement;
+            const btnText = toggleBtn?.querySelector('.btn-text');
+
+            if (checkbox && toggleBtn && btnText) {
                 const updateToggleBtn = () => {
-                    if (checkbox.checked) {
+                if (checkbox.checked) {
                     btnText.textContent = '2 variables';
                     toggleBtn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-secundario').trim();
-                    } else {
+                } else {
                     btnText.textContent = '1 variable';
                     toggleBtn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-primario').trim();
-                    }
+                }
                 };
 
                 checkbox.addEventListener('change', updateToggleBtn);
-
-                // Inicializa el botón con el estado actual
                 updateToggleBtn();
-                }
-
-                const formLagrange = document.getElementById("form-lagrange");
-                if (formLagrange) {
-                    formLagrange.addEventListener("submit", function (e) {
-                        e.preventDefault();
-                        analizarAbsolutos();
-                    });
-                }
+            }
             })
             .catch(error => {
-                contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
-                console.error(error);
+            contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
+            console.error(error);
             });
-    }
+        }
 
     // Ahora conectamos los botones
     if (btnRelativos) {
@@ -168,11 +197,26 @@ function analizarRelativos1Var() {
 
         // MOSTRAR RESULTADOS
         resultadosDiv.innerHTML = `
-            <p><strong>Función:</strong> f(x) = ${funcionStr}</p>
-            <p><strong>Primera derivada:</strong> ${derivada1}</p>
-            <p><strong>Segunda derivada:</strong> ${derivada2}</p>
-            <p><strong>Análisis:</strong><br>${explicacion}</p>
-            <p><strong>Puntos críticos:</strong> ${puntosCriticos.length > 0 ? "<ul>" + analisis + "</ul>" : "No se encontraron puntos críticos."}</p>
+            <div class="resultado-bloque">
+                <h3>Función</h3>
+                <p><code>f(x) = ${funcionStr}</code></p>
+            </div>
+
+            <div class="resultado-bloque">
+                <h3>Derivadas</h3>
+                <p><strong>Primera derivada:</strong> <code>${derivada1}</code></p>
+                <p><strong>Segunda derivada:</strong> <code>${derivada2}</code></p>
+            </div>
+
+            <div class="resultado-bloque">
+                <h3>Análisis</h3>
+                <p>${explicacion}</p>
+            </div>
+
+            <div class="resultado-bloque">
+                <h3>Puntos críticos</h3>
+                ${puntosCriticos.length > 0 ? "<ul class='puntos-lista'>" + analisis + "</ul>" : "<p>No se encontraron puntos críticos.</p>"}
+            </div>
         `;
 
         graficarFuncion(f, funcionStr, puntosGraficar);
@@ -226,39 +270,60 @@ function analizarRelativos2Var() {
         }
 
         // Construcción de salida
-        let html = `<p><strong>Función:</strong> f(x, y) = ${funcionStr}</p>`;
-        html += `<p><strong>Primera derivada respecto a x:</strong> ${fxExpr.toString()} = 0</p>`;
-        html += `<p><strong>Primera derivada respecto a y:</strong> ${fyExpr.toString()} = 0</p>`;
+        let html = `
+        <div class="resultado-bloque">
+        <h3>Función</h3>
+        <p>f(x, y) = ${funcionStr}</p>
+        </div>
+
+        <div class="resultado-bloque">
+        <h3>Primeras Derivadas</h3>
+        <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
+        <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
+        </div>
+        `;
 
         if (puntosCriticos.length === 0) {
-            html += `<p>No se encontraron puntos críticos.</p>`;
+            html += `
+            <div class="resultado-bloque">
+            <p>No se encontraron puntos críticos.</p>
+            </div>`;
             resultadosDiv.innerHTML = html;
             return;
         }
 
-        html += `<h4>Puntos encontrados:</h4><ul>`;
-        puntosCriticos.forEach(p => {
-            html += `<li>(x, y) = (${p.x}, ${p.y})</li>`;
-        });
-        html += `</ul>`;
+        html += `
+        <div class="resultado-bloque">
+        <h3>Puntos críticos encontrados</h3>
+        <ul class="puntos-lista">
+            ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
+        </ul>
+        </div>
 
-        html += `<h4>Construcción de g(x, y)</h4>`;
-        html += `<p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>`;
-        html += `<p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>`;
-        html += `<p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>`;
-        html += `<p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>`;
-        html += `<p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>`;
+        <div class="resultado-bloque">
+        <h3>Construcción de g(x, y)</h3>
+        <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
+        <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
+        <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
+        <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
+        <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
+        </div>
 
-        html += `<h4>Evaluación en cada punto:</h4><ul>`;
-        puntosCriticos.forEach(p => {
-            const { tipo, clasificacion, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
-            html += `<li>
+        <div class="resultado-bloque">
+        <h3>Clasificación de cada punto</h3>
+        <ul class="puntos-lista">
+            ${puntosCriticos.map(p => {
+                const { tipo, clasificacion, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
+                return `
+                <li>
                 <strong>Punto:</strong> (${p.x}, ${p.y})<br>
                 g = ${formatearNumero(d)} ⇒ ${tipo}<br>
                 ${clasificacion ? clasificacion : ""}
-            </li>`;
-        });
-        html += `</ul>`;
+                </li>`;
+            }).join("")}
+        </ul>
+        </div>
+        `;
 
         resultadosDiv.innerHTML = html;
         graficarRelativos2Var(funcionStr, puntosCriticos.map(p => ({
@@ -371,40 +436,75 @@ function graficarFuncion(f, label, puntosCriticos = []) {
     });
 }
 
-
-
 /* CÁLCULO EXTREMOS ABSOLUTOS */
-function analizarAbsolutos() {
-    const fStrRaw = document.getElementById("fxy").value;
-    const gStrRaw = document.getElementById("gxy").value;
-    const resultadosDiv = document.getElementById("resultados-lagrange");
+function analizarAbsolutos2Vars1Restriccion() {
+  const fStrRaw = document.getElementById("fxy").value;
+  const gStrRaw = document.getElementById("gxy").value;
+  const resultadosDiv = document.getElementById("resultados-lagrange");
 
-    resultadosDiv.innerHTML = "<p>Calculando gradientes con math.js...</p>";
+  resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
-    try {
-        // Normalizar expresión para evitar errores de parsing
-        const fExpr = math.parse(fStrRaw);
-        const gExpr = math.parse(gStrRaw);
+  try {
+    const fExpr = math.parse(fStrRaw);
+    const gExpr = math.parse(gStrRaw);
 
-        // Derivadas parciales
-        const fx = math.derivative(fExpr, 'x').toString();
-        const fy = math.derivative(fExpr, 'y').toString();
-        const gx = math.derivative(gExpr, 'x').toString();
-        const gy = math.derivative(gExpr, 'y').toString();
+    const fx = math.derivative(fExpr, 'x').toString();
+    const fy = math.derivative(fExpr, 'y').toString();
+    const gx = math.derivative(gExpr, 'x').toString();
+    const gy = math.derivative(gExpr, 'y').toString();
 
-        // Mostrar resultados
-        let html = `
-            <p><strong>f(x,y):</strong> ${fStrRaw}</p>
-            <p><strong>g(x,y):</strong> ${gStrRaw} = 0</p>
-            <p><strong>Gradiente de f:</strong><br>
-            ∇f = (${fx}) i + (${fy}) j</p>
-            <p><strong>Gradiente de g:</strong><br>
-            ∇g = (${gx}) i + (${gy}) j</p>
-        `;
-        resultadosDiv.innerHTML = html;
+    let html = `
+      <p><strong>f(x,y):</strong> ${fStrRaw}</p>
+      <p><strong>g(x,y):</strong> ${gStrRaw} = 0</p>
+      <p><strong>Gradiente de f:</strong><br>∇f = (${fx}) i + (${fy}) j</p>
+      <p><strong>Gradiente de g:</strong><br>∇g = (${gx}) i + (${gy}) j</p>
+    `;
+    resultadosDiv.innerHTML = html;
 
-    } catch (error) {
-        console.error("Error al calcular gradientes:", error);
-        resultadosDiv.innerHTML = "<p> Error al calcular gradientes. Verifica las expresiones ingresadas.</p>";
-    }
+  } catch (error) {
+    console.error("Error en gradientes 2 variables:", error);
+    resultadosDiv.innerHTML = "<p>Ocurrió un error en la expresión. Verificá los campos f y g.</p>";
+  }
 }
+
+function analizarAbsolutos3Vars2Restricciones() {
+  const fStrRaw = document.getElementById("fxyz").value;
+  const g1StrRaw = document.getElementById("g1xyz").value;
+  const g2StrRaw = document.getElementById("g2xyz").value;
+  const resultadosDiv = document.getElementById("resultados-lagrange");
+
+  resultadosDiv.innerHTML = "<p>Calculando gradientes con math.js...</p>";
+
+  try {
+    const fExpr = math.parse(fStrRaw);
+    const g1Expr = math.parse(g1StrRaw);
+    const g2Expr = math.parse(g2StrRaw);
+
+    const fx = math.derivative(fExpr, 'x').toString();
+    const fy = math.derivative(fExpr, 'y').toString();
+    const fz = math.derivative(fExpr, 'z').toString();
+
+    const g1x = math.derivative(g1Expr, 'x').toString();
+    const g1y = math.derivative(g1Expr, 'y').toString();
+    const g1z = math.derivative(g1Expr, 'z').toString();
+
+    const g2x = math.derivative(g2Expr, 'x').toString();
+    const g2y = math.derivative(g2Expr, 'y').toString();
+    const g2z = math.derivative(g2Expr, 'z').toString();
+
+    let html = `
+      <p><strong>f(x,y,z):</strong> ${fStrRaw}</p>
+      <p><strong>g₁(x,y,z):</strong> ${g1StrRaw} = 0</p>
+      <p><strong>g₂(x,y,z):</strong> ${g2StrRaw} = 0</p>
+      <p><strong>Gradiente de f:</strong><br>∇f = (${fx}) i + (${fy}) j + (${fz}) k</p>
+      <p><strong>Gradiente de g₁:</strong><br>∇g₁ = (${g1x}) i + (${g1y}) j + (${g1z}) k</p>
+      <p><strong>Gradiente de g₂:</strong><br>∇g₂ = (${g2x}) i + (${g2y}) j + (${g2z}) k</p>
+    `;
+    resultadosDiv.innerHTML = html;
+
+  } catch (error) {
+    console.error("Error en gradientes 3 variables:", error);
+    resultadosDiv.innerHTML = "<p>Error al calcular. Verificá las expresiones de f, g₁ y g₂.</p>";
+  }
+}
+

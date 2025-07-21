@@ -71,7 +71,6 @@ footer {
   color: white;
   text-align: center;
   padding: 20px;
-  margin-top: 40px;
 }
 
 /* Scroll suave */
@@ -85,16 +84,4 @@ html {
     background-color: var(--relativo-secundario);
     box-shadow: 0 0 8px var(--resaltador), 0 0 16px var(--resaltador), 0 0 24px var(--resaltador);
     transform: translateY(-2px);
-}
-
-@keyframes neon-pulse {
-    0% { box-shadow: 0 0 8px var(--resaltador); }
-    50% { box-shadow: 0 0 16px var(--resaltador); }
-    100% { box-shadow: 0 0 8px var(--resaltador); }
-}
-
-#contenido-principal button:hover,
-#contenido-principal .btn:hover,
-.toggle-btn:hover {
-    animation: neon-pulse 1.5s infinite;
 }

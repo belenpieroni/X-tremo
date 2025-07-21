@@ -1,17 +1,36 @@
 <link rel="stylesheet" href="css/absolutos.css">
 <section class="modulo-absolutos">
-    <h2>Análisis de Extremos Absolutos</h2>
-    <p>Ingresa una función para analizar sus extremos absolutos:</p>
+  <h2>Análisis de Extremos Absolutos</h2>
+  <p>Ingresa una función para analizar sus extremos absolutos:</p>
 
-    <form id="form-lagrange">
-        <label for="fxy">Función f(x, y):</label>
-        <input type="text" id="fxy" required />
-        <label for="gxy">Restricción g(x, y):</label>
-        <input type="text" id="gxy" required />
-        <button type="submit">Analizar</button>
-    </form>
+  <form id="form-lagrange">
+    <!-- Toggle visual -->
+    <label class="toggle-btn" for="modoAbs2vars">
+      <input type="checkbox" id="modoAbs2vars" />
+      <span class="btn-text">2 variables</span>
+    </label><br><br>
+    <button id="limpiarAbsolutosBtn" class="btn" type="button">Limpiar</button>
+    <!-- Bloque para f(x,y) con una restricción -->
+    <div id="form-2vars">
+      <label for="fxy">Función f(x, y):</label>
+      <input type="text" id="fxy" required />
+      <label for="gxy">Restricción g(x, y):</label>
+      <input type="text" id="gxy" required />
+    </div>
 
+    <!-- Bloque para f(x,y,z) con dos restricciones -->
+    <div id="form-3vars" style="display: none;">
+      <label for="fxyz">Función f(x, y, z):</label>
+      <input type="text" id="fxyz" />
+      <label for="g1xyz">Restricción 1: g(x, y, z):</label>
+      <input type="text" id="g1xyz" />
+      <label for="g2xyz">Restricción 2: h(x, y, z):</label>
+      <input type="text" id="g2xyz" />
+    </div>
 
-    <div id="resultados-lagrange"></div>
-    <canvas id="grafico-funcion"></canvas>
+    <button type="submit" class="btn">Analizar</button>
+  </form>
+
+  <div id="resultados-lagrange"></div>
+  <canvas id="grafico-funcion"></canvas>
 </section>
