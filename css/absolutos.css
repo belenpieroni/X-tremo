@@ -9,9 +9,9 @@
 
 /* Variables específicas Absolutos */
 :root {
-  --absoluto-primario: #C24B35;
-  --absoluto-secundario: #8E3927;
-  --absoluto-fondo: #FFF4EC;
+  --absoluto-primario: #FF6B4D;
+  --absoluto-secundario: #C6412C;
+  --absoluto-fondo: #f3eeec;
   --texto-principal: #222;
   --gris-suave: #e8e8e8;
 }
@@ -58,7 +58,7 @@ h1, h2, h3, h4 {
 
 /* Resultado */
 #resultados-lagrange {
-  background-color: white;
+  background-color: var(--absoluto-fondo);
   border-left: 5px solid var(--absoluto-primario);
   padding: 15px 20px;
   border-radius: 6px;

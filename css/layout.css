@@ -6,7 +6,7 @@ body {
   flex-direction: column;
   min-height: 100vh;
   font-family: 'Poppins', sans-serif;
-  background-color: var(--fondo-crema);
+  background-color: var(--fondo-base);
   color: var(--gris-oscuro);
 }
 
@@ -14,12 +14,13 @@ body {
 #header {
   width: 100%;
   background-color: var(--profundo);
-  color: white;
+  color: var(--fondo-base);
   padding: 15px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px var(--gris-oscuro);
+  border-bottom: 1px solid black;
 }
 
 #header .logo {
@@ -43,7 +44,7 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--fondo-base);
     text-decoration: none;
     padding: 10px;
     font-weight: 600;
@@ -53,7 +54,7 @@ body {
 }
 
 .teoria-link:hover, .inicio-link:hover {
-    color: var(--acento);
+    color: var(--resaltador);
 }
 
 .teoria-link img, .inicio-link img {
@@ -64,15 +65,12 @@ body {
 }
 
 .inicio-link img {
-  filter: brightness(0) saturate(100%) invert(1);
+  filter:invert(1);
 }
 
-.teoria-link:hover img {
-    filter: brightness(0) saturate(100%) invert(51%) sepia(98%) saturate(1767%) hue-rotate(4deg) brightness(102%) contrast(101%);
-}
-
+.teoria-link:hover img,
 .inicio-link:hover img {
-    filter: brightness(0) saturate(100%) invert(51%) sepia(98%) saturate(1767%) hue-rotate(4deg) brightness(102%) contrast(101%);
+    filter: brightness(0) saturate(100%) invert(77%) sepia(13%) saturate(846%) hue-rotate(125deg) brightness(90%) contrast(88%);
 }
 
 /* Contenedor principal con aside + main */
@@ -84,8 +82,8 @@ body {
 /* Sidebar */
 .sidebar {
   width: 220px;
-  background-color: white;
-  border-right: 1px solid #ddd;
+  background-color: var(--profundo);
+  border-right: 1px solid var(--gris-oscuro);
   padding: 20px 0;
   display: flex;
   flex-direction: column;
@@ -100,7 +98,7 @@ body {
   gap: 8px;
   background: none;
   border: none;
-  color: var(--gris-oscuro);
+  color: white;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
@@ -114,7 +112,7 @@ body {
 }
 
 .menu-toggle:hover {
-  background-color: #f0f0f0;
+  background-color: var(--gris-oscuro);
 }
 
 #sidebar-nav ul {
@@ -133,14 +131,14 @@ body {
   padding: 12px 20px;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--gris-oscuro);
+  color: white;
   text-align: left;
   cursor: pointer;
   transition: background-color 0.2s, color 0.2s;
 }
 
 #sidebar-nav button:hover {
-  background-color: #f0f0f0;
+  background-color: var(--gris-oscuro);
   color: var(--resaltador);
 }
 
@@ -157,7 +155,7 @@ body {
 main {
   flex: 1;
   padding: 40px;
-  background-color: var(--fondo-crema);
+  background-color: var(--fondo-base);
   min-height: calc(100vh - 80px); 
 }
 

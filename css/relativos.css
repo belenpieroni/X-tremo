@@ -9,9 +9,9 @@
 
 /* Variables específicas Relativos */
 :root {
-  --relativo-primario: #5A8F7B;       
-  --relativo-secundario: #3C6353;      
-  --relativo-fondo: #F2F7F4;            
+  --relativo-primario: #7d00b3;       
+  --relativo-secundario: #59007c;      
+  --relativo-fondo: #fdf8ff;            
   --texto-principal: #222;
   --gris-suave: #e8e8e8;
 }
@@ -60,7 +60,7 @@ h1, h2, h3, h4 {
 
 /* Resultado */
 #resultados {
-  background-color: white;
+  background-color: var(--relativo-fondo);
   border-left: 5px solid var(--relativo-primario);
   padding: 15px 20px;
   border-radius: 6px;
@@ -96,6 +96,8 @@ code {
   transition: background-color 0.3s ease;
   border: none;
   width: max-content;
+  /* para que parezca botón */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
 
 .toggle-btn:hover {
@@ -104,4 +106,9 @@ code {
 
 .toggle-btn input[type="checkbox"] {
   display: none;
+}
+
+/* Cuando el checkbox está chequeado, cambia el fondo y color */
+.toggle-btn input[type="checkbox"]:checked + .btn-text {
+  font-weight: 700;
 }

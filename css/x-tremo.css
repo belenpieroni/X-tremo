@@ -9,13 +9,11 @@
 
 /* Variables globales */
 :root {
-  --resaltador: #D96459;
-  --acento: #C24B35;
-  --fondo-crema:#FCF5E5;
-  --gris-oscuro: #333;
-  --gris-suave: #999;
-  --profundo: #4B2E2B;
-  --celeste: #15b7c0;
+  --resaltador: #4ECDC4;
+  --fondo-base: white;
+  --gris-oscuro: #2E2E2E;
+  --gris-suave: #cfd9e2;
+  --profundo: #1d1a20;
 }
 
 /* Tipografía base */
@@ -24,7 +22,7 @@ body {
   font-size: 17px;
   line-height: 1.7;
   color: var(--gris-oscuro);
-  background-color: var(--fondo-crema);
+  background-color: var(--fondo-base);
 }
 
 h1, h2, h3, h4 {
