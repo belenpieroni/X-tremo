@@ -13,7 +13,7 @@ body {
 /* Header */
 #header {
   width: 100%;
-  background-color: var(--profundo);
+  background-color: #131313;
   color: var(--fondo-base);
   padding: 15px 20px;
   display: flex;

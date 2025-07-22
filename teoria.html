@@ -3,22 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>X-tremo - Teoría</title>
+  <title>X-tremo – Teoría</title>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap">
   <link rel="stylesheet" href="css/x-tremo.css">
   <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/teoria.css">
   <link rel="icon" href="imagenes/favicon.ico" type="image/x-icon">
 </head>
 <body>
   <div id="header-placeholder"></div>
-  <section class="info-teoria">
-    <div class="container">
-      <h3>Extremos relativos</h3>
-    </div>
-    <div class="container">
-      <h3>Extremos absolutos</h3>
-    </div>
-  </section>
+
+  <main class="teoria-container">
+    <section class="bloque-teorico">
+      <h2>Región Rectangular</h2>
+      <p>Una región rectangular en el plano coordenado es un conjunto de puntos que forman un rectángulo cuyos lados son paralelos a los ejes cartesianos <em>x</em> y <em>y</em>. Formalmente, si consideramos intervalos cerrados <code>[a, b]</code> y <code>[c, d]</code> en los ejes <em>x</em> y <em>y</em>, respectivamente, la región rectangular es el conjunto de puntos <code>(x, y)</code> tal que <code>a ≤ x ≤ b</code> y <code>c ≤ y ≤ d</code>.</p>
+      <p>Esta región es <strong>cerrada</strong> si incluye todos sus puntos de frontera (los bordes), y <strong>abierta</strong> si no incluye esos puntos.</p>
+    </section>
+
+    <section class="bloque-teorico">
+      <h2>Región Acotada</h2>
+      <p>Una región acotada es aquella que está completamente contenida dentro de una región rectangular cerrada. Esto significa que no se extiende indefinidamente en ninguna dirección y que sus puntos están limitados dentro de ciertos valores máximos y mínimos para <em>x</em> e <em>y</em>.</p>
+    </section>
+
+    <section class="bloque-teorico">
+      <h2>Extremos Relativos o Locales</h2>
+      <p>Cuando analizamos una función <em>f(x, y)</em> sin restricciones, es decir, en todo el plano (desde <code>-∞</code> hasta <code>+∞</code>), buscamos puntos donde la función alcanza valores máximos o mínimos en una vecindad cercana. Estos puntos se llaman <strong>extremos relativos</strong> o <strong>locales</strong>.</p>
+      <p>Formalmente, un punto <code>(x_0, y_0)</code> es un máximo local si existe un entorno donde para todos los puntos <code>(x, y)</code> cercanos se cumple que <code>f(x, y) ≤ f(x_0, y_0)</code>. De forma similar, es un mínimo local si <code>f(x, y) ≥ f(x_0, y_0)</code> en dicho entorno.</p>
+      <p>Para encontrarlos, se analizan las derivadas parciales primeras de la función. Un punto crítico es donde ambas derivadas parciales se anulan:</p>
+      <ul>
+        <li><code>∂f/∂x (x_0, y_0) = 0</code></li>
+        <li><code>∂f/∂y (x_0, y_0) = 0</code></li>
+      </ul>
+      <p>Luego, se utiliza el <strong>discriminante</strong> o la matriz Hessiana para clasificar el tipo de extremo: máximo, mínimo o punto de silla.</p>
+      <p><em>Interpretación geométrica:</em> los extremos locales corresponden a puntos donde la superficie representada por <em>f(x, y)</em> tiene un "pico" (máximo), un "valle" (mínimo) o un "paso de silla" donde cambia la curvatura.</p>
+    </section>
+
+    <section class="bloque-teorico">
+      <h2>Extremos Absolutos</h2>
+      <p>Los extremos absolutos (máximo o mínimo global) se buscan cuando la función está definida en una <strong>región acotada</strong>, es decir, con restricciones que limitan su dominio. Estos extremos son los valores más altos o bajos que la función alcanza en todo el dominio considerado, no sólo en un entorno pequeño.</p>
+      <p>Para encontrar extremos absolutos sujetos a una o más restricciones, se utiliza el método de los <strong>multiplicadores de Lagrange</strong>.</p>
+      <p>Sean <code>f(x, y)</code> la función objetivo y <code>g(x, y) = 0</code> la restricción (una curva o superficie donde la función está limitada). Si ambas tienen derivadas parciales continuas, un punto <code>(x_0, y_0)</code> es un extremo absoluto sujeto a la restricción si existen multiplicadores <code>λ</code> tales que:</p>
+      <ul>
+        <li>El gradiente de <code>f</code> en <code>(x_0, y_0)</code> es paralelo al gradiente de <code>g</code>:</li>
+        <p style="text-align:center;"><code>∇f(x_0, y_0) = λ ∇g(x_0, y_0)</code></p>
+        <li>El punto satisface la restricción: <code>g(x_0, y_0) = 0</code></li>
+      </ul>
+      <p>Esto implica que en <code>(x_0, y_0)</code>, no es posible aumentar o disminuir <code>f</code> sin salirse de la región válida definida por <code>g</code>.</p>
+    </section>
+
+    <section class="bloque-teorico">
+      <h2>Demostración Multiplicadores de Lagrange</h2>
+      <p>La idea central es que en un punto de máximo o mínimo absoluto con restricciones, la dirección en la que la función cambia (gradiente de <code>f</code>) debe estar alineada con la dirección en que se mueve sobre la restricción (gradiente de <code>g</code>).</p>
+      <p>Si no fueran paralelos, se podría encontrar una dirección dentro de la restricción para aumentar o disminuir <code>f</code>, contradiciendo que el punto sea un extremo.</p>
+      <p>Por eso, se introduce el multiplicador <code>λ</code> para "balancear" estas dos direcciones, buscando puntos donde los gradientes cumplen la igualdad mencionada, junto con la condición de la restricción.</p>
+    </section>
+
+  </main>
+
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

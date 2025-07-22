@@ -24,8 +24,8 @@ h1, h2, h3, h4 {
 }
 
 /* Botones */
-#contenido-principal button,
-#contenido-principal .btn {
+#contenido-principal button:not(.btn-limpiar),
+#contenido-principal .btn:not(.btn-limpiar) {
   background-color: var(--relativo-primario) !important;
   color: white;
   border: none;
@@ -37,8 +37,8 @@ h1, h2, h3, h4 {
   transition: box-shadow 0.6s ease, transform 0.3s ease;
 }
 
-#contenido-principal button:hover,
-#contenido-principal .btn:hover {
+#contenido-principal button:hover:not(.btn-limpiar),
+#contenido-principal .btn:hover:not(.btn-limpiar) {
   box-shadow: 0 0 12px var(--fondo-base), 0 0 24px var(--relativo-primario) !important;
   transform: translateY(-2px);
 }
@@ -46,7 +46,7 @@ h1, h2, h3, h4 {
 /* Inputs */
 #contenido-principal input, 
 #contenido-principal textarea {
-  border: 1px solid var(--gris-suave);
+  border: 1px solid var(--profundo);
   border-radius: 5px;
   padding: 8px 12px;
   font-size: 16px;
@@ -153,4 +153,28 @@ code {
 /* Cuando el checkbox está chequeado, cambia el fondo y color */
 .toggle-btn input[type="checkbox"]:checked + .btn-text {
   font-weight: 700;
+}
+
+canvas#grafico-funcion:empty {
+  display: none;
+}
+
+#grafico-3d:empty {
+  display: none;
+}
+
+#grafico-funcion {
+  min-height: 0;
+  height: 0;
+  display: block;
+}
+
+#grafico-funcion.activo {
+  height: 400px; /* o lo que uses para tu gráfico */
+}
+
+#grafico-3d {
+  min-height: 0;
+  height: auto;
+  display: block;
 }

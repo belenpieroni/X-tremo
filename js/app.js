@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const contenido = document.getElementById("contenido-principal");
 
     function cargarContenido(ruta) {
+        if (grafico) {
+                grafico.destroy();
+                grafico = null;
+        }       
         fetch(ruta)
             .then(response => {
             if (!response.ok) throw new Error("No se pudo cargar el contenido.");
@@ -33,6 +37,40 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
             contenido.innerHTML = data;
             window.scrollTo({ top: 0, behavior: "smooth" });
+            // Botón Limpiar Relativos
+            const limpiarRelativosBtn = document.getElementById("limpiarRelativosBtn");
+            if (limpiarRelativosBtn) {
+                limpiarRelativosBtn.addEventListener("click", function () {
+                    const funcionInput = document.getElementById("funcion-input");
+                    if (funcionInput) funcionInput.value = "";
+                    const resultadosDiv = document.getElementById("resultados");
+                    if (resultadosDiv) resultadosDiv.innerHTML = "";
+                    if (grafico) {
+                        grafico.destroy();
+                        grafico = null;
+                    }
+
+                    const grafico3D = document.getElementById("grafico-3d");
+                    if (grafico3D) grafico3D.innerHTML = "";
+                });
+            }
+
+            // Botón Limpiar Absolutos
+            const limpiarAbsolutosBtn = document.getElementById("limpiarAbsolutosBtn");
+            if (limpiarAbsolutosBtn) {
+                limpiarAbsolutosBtn.addEventListener("click", function () {
+                    ["fxy", "gxy", "fxyz", "g1xyz", "g2xyz"].forEach(id => {
+                        const input = document.getElementById(id);
+                        if (input) input.value = "";
+                    });
+                    const resultadosDiv = document.getElementById("resultados-lagrange");
+                    if (resultadosDiv) resultadosDiv.innerHTML = "";
+                    if (grafico) {
+                        const ctx = grafico.getContext("2d");
+                        ctx.clearRect(0, 0, grafico.width, grafico.height);
+                    }
+                });
+            }
 
             // 🔄 Checkbox y campos para análisis absoluto
             const checkboxAbs = document.getElementById('modoAbs2vars');
@@ -74,38 +112,75 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
 
-            // ✅ Escucha botón de análisis Relativos
-            const btnAnalizar = document.getElementById("analizarBtn");
-            if (btnAnalizar) {
-                btnAnalizar.addEventListener("click", function () {
-                const modo2vars = document.getElementById("modo2vars")?.checked ?? false;
-                if (modo2vars) {
-                    analizarRelativos2Var();
-                } else {
-                    analizarRelativos1Var();
-                }
+            // ✅ Toggle visual en relativos (2 forms)
+            const checkboxRel = document.getElementById('modoRel2vars');
+            const toggleRel = checkboxRel?.parentElement;
+            const btnTextRel = toggleRel?.querySelector('.btn-text');
+            const formXRel = document.getElementById('form-funcionx');
+            const formXYRel = document.getElementById('form-funcionxy');
+
+            if (checkboxRel && toggleRel && btnTextRel && formXRel && formXYRel) {
+                const updateRelToggle = () => {
+                    const graficoFuncion = document.getElementById("grafico-funcion");
+                    if (checkboxRel.checked) {
+                        // Modo 2 variables
+                        btnTextRel.textContent = '2 variables';
+                        toggleRel.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-secundario').trim();
+                        formXRel.style.display = 'none';
+                        formXYRel.style.display = 'block';
+                        if (graficoFuncion) graficoFuncion.style.display = 'none';
+                    } else {
+                        // Modo 1 variable
+                        btnTextRel.textContent = '1 variable';
+                        toggleRel.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-primario').trim();
+                        formXRel.style.display = 'block';
+                        formXYRel.style.display = 'none';
+                        if (graficoFuncion) graficoFuncion.style.display = 'block';
+                    }
+                };
+
+                checkboxRel.addEventListener('change', updateRelToggle);
+                updateRelToggle();
+            }
+
+            // ✅ Botones de limpieza Relativos por modo
+            const limpiarRelativosBtnX = document.getElementById("limpiarRelativosBtnX");
+            if (limpiarRelativosBtnX) {
+                limpiarRelativosBtnX.addEventListener("click", function () {
+                    document.getElementById("funcion-input-x").value = "";
+                    const resultadosDiv = document.getElementById("resultados");
+                    if (resultadosDiv) resultadosDiv.innerHTML = "";
+                    if (grafico) {
+                        grafico.destroy();
+                        grafico = null;
+                    }
                 });
             }
 
-            // ✅ Toggle visual en relativos
-            const checkbox = document.getElementById('modo2vars');
-            const toggleBtn = checkbox?.parentElement;
-            const btnText = toggleBtn?.querySelector('.btn-text');
-
-            if (checkbox && toggleBtn && btnText) {
-                const updateToggleBtn = () => {
-                if (checkbox.checked) {
-                    btnText.textContent = '2 variables';
-                    toggleBtn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-secundario').trim();
-                } else {
-                    btnText.textContent = '1 variable';
-                    toggleBtn.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--relativo-primario').trim();
-                }
-                };
-
-                checkbox.addEventListener('change', updateToggleBtn);
-                updateToggleBtn();
+            const limpiarRelativosBtnXY = document.getElementById("limpiarRelativosBtnXY");
+            if (limpiarRelativosBtnXY) {
+                limpiarRelativosBtnXY.addEventListener("click", function () {
+                    document.getElementById("funcion-input-xy").value = "";
+                    const resultadosDiv = document.getElementById("resultados");
+                    if (resultadosDiv) resultadosDiv.innerHTML = "";
+                    const grafico3D = document.querySelector("#grafico-3d");
+                    if (grafico3D) grafico3D.innerHTML = "";
+                });
             }
+
+            // ✅ Botón de análisis Relativos funcional por modo
+            const btnAnalizar = document.getElementById("analizarBtn");
+            if (btnAnalizar) {
+                btnAnalizar.addEventListener("click", function () {
+                    const modo2vars = document.getElementById("modoRel2vars")?.checked ?? false;
+                    if (modo2vars) {
+                        analizarRelativos2Var();
+                    } else {
+                        analizarRelativos1Var();
+                    }
+                });
+            }
+
             })
             .catch(error => {
             contenido.innerHTML = "<p>Error al cargar el contenido.</p>";
@@ -139,7 +214,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 1 VARIABLE*/
 function analizarRelativos1Var() {
-    const funcionStr = document.getElementById("funcion-input").value;
+    const funcionStr = document.getElementById("funcion-input-x").value;
     const resultadosDiv = document.getElementById("resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
@@ -229,7 +304,7 @@ function analizarRelativos1Var() {
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 2 VARIABLES */
 function analizarRelativos2Var() {
-    const funcionStr = document.getElementById("funcion-input").value;
+    const funcionStr = document.getElementById("funcion-input-xy").value;
     const resultadosDiv = document.getElementById("resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
@@ -332,14 +407,17 @@ function analizarRelativos2Var() {
             tipo: "punto crítico"
         })));
     } catch (error) {
-        resultadosDiv.innerHTML = `<p>⚠️ Error al calcular: ${error.message}</p>`;
+        resultadosDiv.innerHTML = `<p> Error al calcular: ${error.message}</p>`;
     }
 }
 
 /* Realizar gráfico */
 let grafico;
 function graficarFuncion(f, label, puntosCriticos = []) {
-    const ctx = document.getElementById("grafico-funcion").getContext("2d");
+    const canvas = document.getElementById("grafico-funcion");
+    canvas.classList.add("activo");
+    const ctx = canvas.getContext("2d");
+
     const xs = [];
     const ys = [];
 

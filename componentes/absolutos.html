@@ -9,19 +9,29 @@
       <input type="checkbox" id="modoAbs2vars" />
       <span class="btn-text">2 variables</span>
     </label><br><br>
-    <button id="limpiarAbsolutosBtn" class="btn" type="button">Limpiar</button>
+
     <!-- Bloque para f(x,y) con una restricción -->
     <div id="form-2vars">
-      <label for="fxy">Función f(x, y):</label>
-      <input type="text" id="fxy" required />
+      <label for="fxy">Función: f(x, y):</label>
+      <div class="input-con-limpiar">
+        <input type="text" id="fxy" required placeholder="Función f(x,y)"/>
+        <button id="limpiarAbsolutosBtn" type="button" class="btn-limpiar" title="Limpiar">
+          <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
+        </button>
+      </div>
       <label for="gxy">Restricción g(x, y):</label>
       <input type="text" id="gxy" required />
     </div>
 
     <!-- Bloque para f(x,y,z) con dos restricciones -->
     <div id="form-3vars" style="display: none;">
-      <label for="fxyz">Función f(x, y, z):</label>
-      <input type="text" id="fxyz" />
+      <label for="fxyz">Función: f(x, y, z):</label>
+      <div class="input-con-limpiar">
+        <input type="text" id="fxyz" required placeholder="Función f(x,y,z)"/>
+        <button id="limpiarAbsolutosBtn" type="button" class="btn-limpiar" title="Limpiar">
+          <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
+        </button>
+      </div>
       <label for="g1xyz">Restricción 1: g(x, y, z):</label>
       <input type="text" id="g1xyz" />
       <label for="g2xyz">Restricción 2: h(x, y, z):</label>

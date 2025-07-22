@@ -35,7 +35,7 @@ input, textarea, select {
   font-size: 1rem;
   padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--profundo);
   margin-bottom: 15px;
   width: 100%;
 }
@@ -67,7 +67,7 @@ code {
 
 /* Footer */
 footer {
-  background-color: var(--gris-oscuro);
+  background-color: #131313;
   color: white;
   text-align: center;
   padding: 20px;
@@ -78,10 +78,32 @@ html {
   scroll-behavior: smooth;
 }
 
-#contenido-principal button:hover,
-#contenido-principal .btn:hover,
-.toggle-btn:hover {
-    background-color: var(--relativo-secundario);
-    box-shadow: 0 0 8px var(--resaltador), 0 0 16px var(--resaltador), 0 0 24px var(--resaltador);
-    transform: translateY(-2px);
+.input-con-limpiar {
+  position: relative;
+  width: 100%;
+}
+
+.input-con-limpiar input {
+  width: 100%;
+  padding-right: 36px; 
+}
+
+.btn-limpiar {
+  position: absolute;
+  right: 8px;
+  top: 40%;
+  transform: translateY(-50%);
+  background: var(--profundo);
+  box-shadow: none !important;
+  transition: background-color 0.2s ease;
+  border: none !important;
+  cursor: pointer;
+  padding: 2px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.btn-limpiar:hover {
+  background-color: #d73030 !important;
 }

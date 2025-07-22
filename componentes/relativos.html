@@ -2,22 +2,39 @@
 <section class="modulo-relativos">
   <h2>Análisis de Extremos Relativos</h2>
   <p>Ingresa una función para analizar sus extremos relativos:</p>
+  
+  <!-- Toggle visual -->
+  <label class="toggle-btn" for="modoRel2vars">
+    <input type="checkbox" id="modoRel2vars" />
+    <span class="btn-text">1 variable</span>
+  </label><br><br>
+
   <form id="form-funcion">
-    <button id="limpiarRelativosBtn" class="btn" type="button">Limpiar</button>
-    <label class="toggle-btn" for="modo2vars">
-      <input type="checkbox" id="modo2vars" />
-      <span class="btn-text">1 variable</span>
-    </label><br>
-    <label for="funcion-input">Función f:</label>
-    <div class="input-con-limpiar">
-      <input type="text" id="funcion-input" placeholder="Ej: x^3-3x+2" />
-      <button id="limpiarRelativosBtn" type="button" class="btn-limpiar" title="Limpiar">&#10006;</button>
+    <!-- Bloque para 1 variable -->
+    <div id="form-funcionx">
+      <label for="funcion-input-x">Función: f(x):</label>
+      <div class="input-con-limpiar">
+        <input type="text" id="funcion-input-x" placeholder="Ej: x^3 - 3*x + 2" required />
+        <button id="limpiarRelativosBtnX" type="button" class="btn-limpiar" title="Limpiar">
+          <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
+        </button>
+      </div>
     </div>
-    <input type="text" id="funcion-input" placeholder="Ej: x^3-3x+2" />
+
+    <!-- Bloque para 2 variables -->
+    <div id="form-funcionxy" style="display: none;">
+      <label for="funcion-input-xy">Función: f(x, y):</label>
+      <div class="input-con-limpiar">
+        <input type="text" id="funcion-input-xy" placeholder="Ej: x^3 - 3*x*y + y^3" required />
+        <button id="limpiarRelativosBtnXY" type="button" class="btn-limpiar" title="Limpiar">
+          <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
+        </button>
+      </div>
+    </div>
+
     <button id="analizarBtn" class="btn" type="button">Analizar</button>
   </form>
+  <canvas id="grafico-funcion"></canvas>
   <div id="grafico-3d"></div>
   <div id="resultados" class="resultados"></div>
-  <canvas id="grafico-funcion"></canvas>
 </section>
-
