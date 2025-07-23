@@ -54,7 +54,6 @@ a {
 
 a:hover {
     color: var(--resaltador);
-    text-shadow: 0 0 6px var(--resaltador);
 }
 
 /* Código embebido */
@@ -106,4 +105,29 @@ html {
 
 .btn-limpiar:hover {
   background-color: #d73030 !important;
+}
+
+.intro-x-tremo {
+  max-width: 100%;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.intro-x-tremo h1 {
+  font-size: 2rem;
+  color: var(--resaltador);
+  margin-bottom: 1rem;
+}
+
+.intro-x-tremo ul {
+  padding-left: 20px;
+}
+
+.intro-x-tremo a {
+  color: var(--resaltador);
+  text-decoration: none;
+}
+
+.intro-x-tremo a:hover {
+  text-decoration: underline;
 }

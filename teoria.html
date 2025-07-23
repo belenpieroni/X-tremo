@@ -9,57 +9,149 @@
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/teoria.css">
   <link rel="icon" href="imagenes/favicon.ico" type="image/x-icon">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
   <div id="header-placeholder"></div>
-
   <main class="teoria-container">
     <section class="bloque-teorico">
+      <h1>Teoría</h1>
+      <p>
+        Este apartado te permitirá comprender de forma clara y ordenada los conceptos detrás de cada cálculo que realiza <strong>X-tremo</strong>. Aquí encontrarás explicaciones sobre <em>extremos relativos, extremos absolutos y el método de multiplicadores de Lagrange</em>, junto con interpretaciones geométricas y criterios de análisis que facilitarán tu estudio de Análisis Matemático II.
+      </p>
+      <p>
+        El objetivo es que no solo sepas cómo obtener resultados, sino que también comprendas el porqué de cada procedimiento, afianzando tu base teórica para abordar parciales y ejercicios con mayor seguridad.
+      </p>
+    </section>
+    <!-- Índice navegable -->
+    <nav class="indice-teoria">
+      <h2>Índice</h2>
+      <ul>
+        <li><a href="#rectangular">1- Región Rectangular</a></li>
+        <li><a href="#acotada">2- Región Acotada</a></li>
+        <li><a href="#maximos-minimos">3- Máximos y mínimos</a></li>
+        <li><a href="#relativos">4- Extremos Relativos o Locales</a></li>
+        <li><a href="#absolutos">5- Extremos Absolutos</a></li>
+        <li><a href="#lagrange">6- Demostración Multiplicadores de Lagrange</a></li>
+      </ul>
+    </nav>
+    <!--Secciones-->
+    <section id="rectangular" class="bloque-teorico">
       <h2>Región Rectangular</h2>
-      <p>Una región rectangular en el plano coordenado es un conjunto de puntos que forman un rectángulo cuyos lados son paralelos a los ejes cartesianos <em>x</em> y <em>y</em>. Formalmente, si consideramos intervalos cerrados <code>[a, b]</code> y <code>[c, d]</code> en los ejes <em>x</em> y <em>y</em>, respectivamente, la región rectangular es el conjunto de puntos <code>(x, y)</code> tal que <code>a ≤ x ≤ b</code> y <code>c ≤ y ≤ d</code>.</p>
-      <p>Esta región es <strong>cerrada</strong> si incluye todos sus puntos de frontera (los bordes), y <strong>abierta</strong> si no incluye esos puntos.</p>
+      <p>Una región rectangular en el plano coordenado es un conjunto de puntos que forman un rectángulo cuyos lados son paralelos a los ejes cartesianos \( x \), \( y \).</p>
+      <p>Formalmente, si consideramos intervalos cerrados \( [a, b] \) y \( [c, d] \) en los ejes, la región rectangular es el conjunto de puntos \( (x, y) \) tal que \( a \leq x \leq b \) y \( c \leq y \leq d \).</p>
+      <p>Esta región es <strong>cerrada</strong> si incluye todos sus puntos de frontera, y <strong>abierta</strong> si no incluye esos puntos.</p>
     </section>
-
-    <section class="bloque-teorico">
+    <section id="acotada" class="bloque-teorico">
       <h2>Región Acotada</h2>
-      <p>Una región acotada es aquella que está completamente contenida dentro de una región rectangular cerrada. Esto significa que no se extiende indefinidamente en ninguna dirección y que sus puntos están limitados dentro de ciertos valores máximos y mínimos para <em>x</em> e <em>y</em>.</p>
+      <p>Una región acotada es aquella que está completamente contenida dentro de una región rectangular cerrada. No se extiende indefinidamente y sus puntos están limitados dentro de ciertos valores máximos y mínimos para \( x \) e \( y \).</p>
     </section>
-
-    <section class="bloque-teorico">
+    <section id="maximos-minimos" class="bloque-teorico">
+      <h2>Máximos y mínimos</h2>
+      <p>Los puntos críticos, ya sean máximos, mínimos o puntos de ensilladura, cumplen con un cambio en la concavidad de la función.</p>
+    </section>
+    <section id="relativos" class="bloque-teorico">
       <h2>Extremos Relativos o Locales</h2>
-      <p>Cuando analizamos una función <em>f(x, y)</em> sin restricciones, es decir, en todo el plano (desde <code>-∞</code> hasta <code>+∞</code>), buscamos puntos donde la función alcanza valores máximos o mínimos en una vecindad cercana. Estos puntos se llaman <strong>extremos relativos</strong> o <strong>locales</strong>.</p>
-      <p>Formalmente, un punto <code>(x_0, y_0)</code> es un máximo local si existe un entorno donde para todos los puntos <code>(x, y)</code> cercanos se cumple que <code>f(x, y) ≤ f(x_0, y_0)</code>. De forma similar, es un mínimo local si <code>f(x, y) ≥ f(x_0, y_0)</code> en dicho entorno.</p>
-      <p>Para encontrarlos, se analizan las derivadas parciales primeras de la función. Un punto crítico es donde ambas derivadas parciales se anulan:</p>
+      <p>Cuando analizamos una función \( f(x, y) \) sin restricciones, es decir, en todo el plano \( [-\infty, +\infty] \), buscamos puntos donde alcanza máximos o mínimos. Estos puntos se llaman <strong>extremos relativos</strong>.</p>
+      <p>Formalmente, un punto \( (a, b) \) es un máximo local si existe un entorno donde para todos \( (x, y) \) cercanos se cumple: \( f(x, y) \leq f(a, b) \). Y un mínimo local si \( f(x, y) \geq f(a, b) \).</p>
+      <p>Para encontrarlos, se analizan las derivadas parciales primeras. Un punto crítico se da cuando:</p>
       <ul>
-        <li><code>∂f/∂x (x_0, y_0) = 0</code></li>
-        <li><code>∂f/∂y (x_0, y_0) = 0</code></li>
+        <li>\( \frac{\partial f}{\partial x}(a, b) = 0 \)</li>
+        <li>\( \frac{\partial f}{\partial y}(a, b) = 0 \)</li>
       </ul>
-      <p>Luego, se utiliza el <strong>discriminante</strong> o la matriz Hessiana para clasificar el tipo de extremo: máximo, mínimo o punto de silla.</p>
-      <p><em>Interpretación geométrica:</em> los extremos locales corresponden a puntos donde la superficie representada por <em>f(x, y)</em> tiene un "pico" (máximo), un "valle" (mínimo) o un "paso de silla" donde cambia la curvatura.</p>
-    </section>
+      <p><em>Interpretación geométrica:</em> en la superficie que representa \( f(x, y) \), los máximos relativos son los puntos más altos, y los mínimos relativos los más bajos.</p>
 
-    <section class="bloque-teorico">
+      <h3>Análisis de puntos críticos</h3>
+      <p>Para analizarlos usamos:</p>
+      <ul>
+        <li>\( g(x, y) = f_{xx} \cdot f_{yy} - f_{xy} \cdot f_{yx} \)</li>
+        <li>Como las derivadas cruzadas son iguales: \( f_{xy} = f_{yx} \)</li>
+        <li>Entonces: \( g(x, y) = f_{xx} \cdot f_{yy} - f_{xy}^2 \)</li>
+      </ul>
+      <p>Regla de clasificación para un púnto crítico (a, b):</p>
+      <ul>
+        <li>Si \( g(a, b) > 0 \) → Es extremo</li>
+        <li>Si \( g(a, b) < 0 \) → Punto de ensilladura</li>
+        <li>Si \( g(a, b) = 0 \) → Criterio no decide</li>
+      </ul>
+      <p>Si estamos en el caso de extremo (\( g > 0 \)), decidimos si es máximo o mínimo a través de la <strong>segunda derivada</strong>:</p>
+      <ul>
+        <li>Si \( f_{xx} < 0 \) o \( f_{yy} < 0 \) → Si es negativa es un <strong>Máximo relativo</strong></li>
+        <li>Si \( f_{xx} > 0 \) o \( f_{yy} > 0 \) → Si es positiva es un <strong>Mínimo relativo</strong></li>
+      </ul>
+    </section>
+    <section id="absolutos" class="bloque-teorico">
       <h2>Extremos Absolutos</h2>
-      <p>Los extremos absolutos (máximo o mínimo global) se buscan cuando la función está definida en una <strong>región acotada</strong>, es decir, con restricciones que limitan su dominio. Estos extremos son los valores más altos o bajos que la función alcanza en todo el dominio considerado, no sólo en un entorno pequeño.</p>
-      <p>Para encontrar extremos absolutos sujetos a una o más restricciones, se utiliza el método de los <strong>multiplicadores de Lagrange</strong>.</p>
-      <p>Sean <code>f(x, y)</code> la función objetivo y <code>g(x, y) = 0</code> la restricción (una curva o superficie donde la función está limitada). Si ambas tienen derivadas parciales continuas, un punto <code>(x_0, y_0)</code> es un extremo absoluto sujeto a la restricción si existen multiplicadores <code>λ</code> tales que:</p>
-      <ul>
-        <li>El gradiente de <code>f</code> en <code>(x_0, y_0)</code> es paralelo al gradiente de <code>g</code>:</li>
-        <p style="text-align:center;"><code>∇f(x_0, y_0) = λ ∇g(x_0, y_0)</code></p>
-        <li>El punto satisface la restricción: <code>g(x_0, y_0) = 0</code></li>
-      </ul>
-      <p>Esto implica que en <code>(x_0, y_0)</code>, no es posible aumentar o disminuir <code>f</code> sin salirse de la región válida definida por <code>g</code>.</p>
+      <p>Se buscan cuando la función está definida en una <strong>región acotada</strong>. Los extremos absolutos son los valores más altos o más bajos que alcanza dentro de esa región.</p>
+      <p>Se utiliza el método de los <strong>multiplicadores de Lagrange</strong>.</p>
+      <h3>Multiplicadores de Lagrange</h3>
+      <p>Sean \( f(x, y) \) la función objetivo y \( g(x, y) \) la restricción</p>
+      <p>En el punto extremo \( (x_0, y_0) \) debe cumplirse:</p>
+      <p>\( \nabla f(x_0, y_0) = \lambda \cdot \nabla g(x_0, y_0) \)</p>
+      <p>Y \( \nabla g(x_0, y_0) \ \neq 0 \)</p>
     </section>
-
-    <section class="bloque-teorico">
+    <section id="lagrange" class="bloque-teorico">
       <h2>Demostración Multiplicadores de Lagrange</h2>
-      <p>La idea central es que en un punto de máximo o mínimo absoluto con restricciones, la dirección en la que la función cambia (gradiente de <code>f</code>) debe estar alineada con la dirección en que se mueve sobre la restricción (gradiente de <code>g</code>).</p>
-      <p>Si no fueran paralelos, se podría encontrar una dirección dentro de la restricción para aumentar o disminuir <code>f</code>, contradiciendo que el punto sea un extremo.</p>
-      <p>Por eso, se introduce el multiplicador <code>λ</code> para "balancear" estas dos direcciones, buscando puntos donde los gradientes cumplen la igualdad mencionada, junto con la condición de la restricción.</p>
+      <p>La idea central es que en un punto de máximo o mínimo absoluto con restricciones, la dirección en la que la función cambia (gradiente de \( f \)) debe estar alineada con la dirección en que se mueve sobre la restricción (gradiente de \( g \)).</p>
+      <p>Si no fueran paralelos, se podría encontrar una dirección dentro de la restricción para aumentar o disminuir \( f \), contradiciendo que el punto sea un extremo.</p>
+      <p>Por eso, se introduce el multiplicador \( \lambda \) para "balancear" estas dos direcciones, buscando puntos donde los gradientes cumplen la igualdad mencionada, junto con la condición de la restricción.</p>
+      <h3>1- Paramentrización:</h3>
+      <p>Lo primero que debemos tener en cuenta es que \( f(x, y) \) admite parametrización, es decir que lo podemos expresar en función de \( t \). Entonces, podemos expresarla como una función compuesta:</p>
+      <p>
+        $$
+        C:\left\{
+        \begin{array}{l}
+        x = h(t) \\
+        y = k(t)
+        \end{array}
+        \right.
+        $$
+      </p>
+      <p style="text-align:center;">\( f(x, y) = F [h(t), k(t)] \)</p>
+      <h3>2- Regla de la cadena:</h3>
+      <p>Por regla de la cadena, calculamos la derivada de \( F \) con respecto a \( t \):</p>
+      <p>$$
+        \frac{dF}{dt} = \frac{\partial F}{\partial x} \cdot \frac{dx}{dt} + \frac{\partial F}{\partial y} \cdot \frac{dy}{dt}
+        $$
+      </p>
+      <h3>3- En el punto crítico:</h3>
+      <p>Planteamos un punto crítico \( P_0(x_0, y_0) \) que es extremo.</p>
+      <p>Luego, debemos expresar el <strong>vector posición</strong> \( \vec{r} = x\hat{i} + y\hat{j} \) en función de \( t_0 \):</p>
+      <p style="text-align:center;">\( \vec{r}(t_0) = h(t_0)\hat{i} + k(t_0)\hat{j} \) </p>
+      <p>Y obtener el <strong>vector velocidad</strong> (derivada del vector posición) en función de \( t_0 \):</p>
+      <p style="text-align:center;">\( \vec{r}'(t_0) = h'(t_0)\hat{i} + k'(t_0)\hat{j} \) </p>
+      <p>Una vez que tenemos estos vectores, calculamos la derivada de \( F \) con respecto a \( t_0 \):</p>
+      <p>
+        $$
+        \frac{dF}{dt_0} = \frac{\partial F}{\partial x} \cdot \frac{dx}{dt_0} + \frac{\partial F}{\partial y} \cdot \frac{dy}{dt_0}
+        $$
+      </p>
+      <p>
+        $$
+        \ F'(t_0) = f_x(x_0, y_0) \cdot h'(t_0) + f_y(x_0, y_0) \cdot k'(t_0)
+        $$
+      </p>
+      <p>
+        $$
+        \ F'(t_0) = \left[ f_x(x_0, y_0)\,\hat{i} + f_y(x_0, y_0)\,\hat{j} \right] \cdot \left[ h'(t_0)\,\hat{i} + k'(t_0)\,\hat{j} \right]
+        $$
+      </p>
+      <p>Como se ve, se obtiene un producto escalar tal que:</p>
+      <p style="text-align:center;">\( F'(t_0) = \nabla f(x_0, y_0) \cdot \vec{r}'(t_0) = 0 \)</p>
+      <p>Y la igualamos a cero por ser punto crítico.</p>
+      <h3>4- Conclusión:</h3>
+      <p>\( \nabla f(x_0, y_0) \) debe ser perpendicular al vector velocidad para que se cumpla la igualdad.</p>
+      <p>Y como \( \nabla g(x_0, y_0) \) también es perpendicular al vector velocidad, podemos afirmar que ambos gradientes son paralelos entre sí. Por lo tanto, existe un número real \( \lambda \) que cumpla:</p>
+      <p style="text-align:center;">\( \nabla f(x_0, y_0) = \lambda \cdot \nabla g(x_0, y_0) \)</p>
     </section>
-
   </main>
-
+  <footer>
+    <div class="container">
+        <p>&copy; Análisis Matemático II. Universidad Tecnologica Nacional FRLP.</p>
+        <p>Pieroni, María Belén</p>
+    </div>
+  </footer>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
