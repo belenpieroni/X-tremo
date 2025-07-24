@@ -84,7 +84,7 @@ export function encontrarCeros(f1) {
     return ceros;
 }
 
-export function graficarRelativos2Var(funcionStr, puntosCriticos = []) {
+export function graficar2Var(funcionStr, puntosCriticos = []) {
     const graficoDiv = document.getElementById("grafico-3d");
     if (!graficoDiv) {
         console.error("Falta <div id='grafico-3d'> para renderizar el gráfico.");

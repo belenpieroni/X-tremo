@@ -3,7 +3,7 @@ import {
     clasificarPunto,
     personalizarHeader,
     formatearNumero,
-    graficarRelativos2Var,
+    graficar2Var,
     encontrarCeros
 } from './XtremoUtils.js';
 
@@ -81,17 +81,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (checkboxAbs && toggleAbs && btnTextAbs && form2vars && form3vars) {
                 const updateAbsToggle = () => {
-                if (checkboxAbs.checked) {
-                    btnTextAbs.textContent = '3 variables';
-                    toggleAbs.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--absoluto-secundario').trim();
-                    form2vars.style.display = 'none';
-                    form3vars.style.display = 'block';
-                } else {
-                    btnTextAbs.textContent = '2 variables';
-                    toggleAbs.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--absoluto-primario').trim();
-                    form2vars.style.display = 'block';
-                    form3vars.style.display = 'none';
-                }
+                    if (checkboxAbs.checked) {
+                        // Modo 3 variables
+                        btnTextAbs.textContent = '3 variables';
+                        toggleAbs.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--absoluto-secundario').trim();
+                        form2vars.style.display = 'none';
+                        form3vars.style.display = 'block';
+
+                        // Deshabilitar inputs de 2 vars, habilitar de 3 vars
+                        form2vars.querySelectorAll("input").forEach(input => input.disabled = true);
+                        form3vars.querySelectorAll("input").forEach(input => input.disabled = false);
+
+                    } else {
+                        // Modo 2 variables
+                        btnTextAbs.textContent = '2 variables';
+                        toggleAbs.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--absoluto-primario').trim();
+                        form2vars.style.display = 'block';
+                        form3vars.style.display = 'none';
+
+                        // Habilitar inputs de 2 vars, deshabilitar de 3 vars
+                        form2vars.querySelectorAll("input").forEach(input => input.disabled = false);
+                        form3vars.querySelectorAll("input").forEach(input => input.disabled = true);
+                    }
                 };
 
                 checkboxAbs.addEventListener('change', updateAbsToggle);
@@ -105,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.preventDefault();
                 const modo3vars = document.getElementById("modoAbs2vars")?.checked ?? false;
                 if (modo3vars) {
-                    analizarAbsolutos3Vars2Restricciones();
+                    alert("El análisis para 3 variables aún no está implementado.");
                 } else {
                     analizarAbsolutos2Vars1Restriccion();
                 }
@@ -302,115 +313,6 @@ function analizarRelativos1Var() {
     }
 }
 
-/* CÁLCULO DE EXTREMOS RELATIVOS 2 VARIABLES */
-function analizarRelativos2Var() {
-    const funcionStr = document.getElementById("funcion-input-xy").value;
-    const resultadosDiv = document.getElementById("resultados");
-    resultadosDiv.innerHTML = "<p>Calculando...</p>";
-
-    try {
-        const fExpr = math.parse(funcionStr);
-
-        // Derivadas parciales y segundas
-        const fxExpr = math.derivative(fExpr, 'x');
-        const fyExpr = math.derivative(fExpr, 'y');
-        const fxxExpr = math.derivative(fxExpr, 'x');
-        const fyyExpr = math.derivative(fyExpr, 'y');
-        const fxyExpr = math.derivative(fxExpr, 'y');
-
-        const fx = fxExpr.compile();
-        const fy = fyExpr.compile();
-        const fxx = fxxExpr.compile();
-        const fyy = fyyExpr.compile();
-        const fxy = fxyExpr.compile();
-        const f = math.compile(funcionStr);
-
-        const puntosCriticos = [];
-
-        // Escaneo de grilla
-        for (let x = -3; x <= 3; x += 0.1) {
-            for (let y = -3; y <= 3; y += 0.1) {
-                try {
-                    const fxVal = fx.evaluate({ x, y });
-                    const fyVal = fy.evaluate({ x, y });
-                    if (Math.abs(fxVal) < 1e-2 && Math.abs(fyVal) < 1e-2) {
-                        const xR = Number(x.toFixed(3));
-                        const yR = Number(y.toFixed(3));
-                        if (!puntosCriticos.some(p => Math.abs(p.x - xR) < 1e-3 && Math.abs(p.y - yR) < 1e-3)) {
-                            puntosCriticos.push({ x: xR, y: yR });
-                        }
-                    }
-                } catch { /* ignorar errores */ }
-            }
-        }
-
-        // Construcción de salida
-        let html = `
-        <div class="resultado-bloque">
-        <h3>Función</h3>
-        <p>f(x, y) = ${funcionStr}</p>
-        </div>
-
-        <div class="resultado-bloque">
-        <h3>Primeras Derivadas</h3>
-        <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
-        <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
-        </div>
-        `;
-
-        if (puntosCriticos.length === 0) {
-            html += `
-            <div class="resultado-bloque">
-            <p>No se encontraron puntos críticos.</p>
-            </div>`;
-            resultadosDiv.innerHTML = html;
-            return;
-        }
-
-        html += `
-        <div class="resultado-bloque">
-        <h3>Puntos críticos encontrados</h3>
-        <ul class="puntos-lista">
-            ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
-        </ul>
-        </div>
-
-        <div class="resultado-bloque">
-        <h3>Construcción de g(x, y)</h3>
-        <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
-        <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
-        <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
-        <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
-        <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
-        </div>
-
-        <div class="resultado-bloque">
-        <h3>Clasificación de cada punto</h3>
-        <ul class="puntos-lista">
-            ${puntosCriticos.map(p => {
-                const { tipo, clasificacion, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
-                return `
-                <li>
-                <strong>Punto:</strong> (${p.x}, ${p.y})<br>
-                g = ${formatearNumero(d)} ⇒ ${tipo}<br>
-                ${clasificacion ? clasificacion : ""}
-                </li>`;
-            }).join("")}
-        </ul>
-        </div>
-        `;
-
-        resultadosDiv.innerHTML = html;
-        graficarRelativos2Var(funcionStr, puntosCriticos.map(p => ({
-            x: p.x,
-            y: p.y,
-            tipo: "punto crítico"
-        })));
-    } catch (error) {
-        resultadosDiv.innerHTML = `<p> Error al calcular: ${error.message}</p>`;
-    }
-}
-
 /* Realizar gráfico */
 let grafico;
 function graficarFuncion(f, label, puntosCriticos = []) {
@@ -514,34 +416,210 @@ function graficarFuncion(f, label, puntosCriticos = []) {
     });
 }
 
+/* CÁLCULO DE EXTREMOS RELATIVOS 2 VARIABLES */
+function analizarRelativos2Var() {
+    const funcionStr = document.getElementById("funcion-input-xy").value;
+    const resultadosDiv = document.getElementById("resultados");
+    resultadosDiv.innerHTML = "<p>Calculando...</p>";
+
+    try {
+        const fExpr = math.parse(funcionStr);
+
+        // Derivadas parciales y segundas
+        const fxExpr = math.derivative(fExpr, 'x');
+        const fyExpr = math.derivative(fExpr, 'y');
+        const fxxExpr = math.derivative(fxExpr, 'x');
+        const fyyExpr = math.derivative(fyExpr, 'y');
+        const fxyExpr = math.derivative(fxExpr, 'y');
+
+        const fx = fxExpr.compile();
+        const fy = fyExpr.compile();
+        const fxx = fxxExpr.compile();
+        const fyy = fyyExpr.compile();
+        const fxy = fxyExpr.compile();
+        const f = math.compile(funcionStr);
+
+        const puntosCriticos = [];
+
+        // Escaneo de grilla
+        for (let x = -3; x <= 3; x += 0.1) {
+            for (let y = -3; y <= 3; y += 0.1) {
+                try {
+                    const fxVal = fx.evaluate({ x, y });
+                    const fyVal = fy.evaluate({ x, y });
+                    if (Math.abs(fxVal) < 1e-2 && Math.abs(fyVal) < 1e-2) {
+                        const xR = Number(x.toFixed(3));
+                        const yR = Number(y.toFixed(3));
+                        if (!puntosCriticos.some(p => Math.abs(p.x - xR) < 1e-3 && Math.abs(p.y - yR) < 1e-3)) {
+                            puntosCriticos.push({ x: xR, y: yR });
+                        }
+                    }
+                } catch { /* ignorar errores */ }
+            }
+        }
+
+        // Construcción de salida
+        let html = `
+        <div class="resultado-bloque">
+        <h3>Función</h3>
+        <p>f(x, y) = ${funcionStr}</p>
+        </div>
+
+        <div class="resultado-bloque">
+        <h3>Primeras Derivadas</h3>
+        <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
+        <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
+        </div>
+        `;
+
+        if (puntosCriticos.length === 0) {
+            html += `
+            <div class="resultado-bloque">
+            <p>No se encontraron puntos críticos.</p>
+            </div>`;
+            resultadosDiv.innerHTML = html;
+            return;
+        }
+
+        html += `
+        <div class="resultado-bloque">
+        <h3>Puntos críticos encontrados</h3>
+        <ul class="puntos-lista">
+            ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
+        </ul>
+        </div>
+
+        <div class="resultado-bloque">
+        <h3>Construcción de g(x, y)</h3>
+        <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
+        <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
+        <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
+        <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
+        <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
+        </div>
+
+        <div class="resultado-bloque">
+        <h3>Clasificación de cada punto</h3>
+        <ul class="puntos-lista">
+            ${puntosCriticos.map(p => {
+                const { tipo, clasificacion, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
+                return `
+                <li>
+                <strong>Punto:</strong> (${p.x}, ${p.y})<br>
+                g = ${formatearNumero(d)} ⇒ ${tipo}<br>
+                ${clasificacion ? clasificacion : ""}
+                </li>`;
+            }).join("")}
+        </ul>
+        </div>
+        `;
+
+        resultadosDiv.innerHTML = html;
+        graficar2Var(funcionStr, puntosCriticos.map(p => ({
+            x: p.x,
+            y: p.y,
+            tipo: "punto crítico"
+        })));
+    } catch (error) {
+        resultadosDiv.innerHTML = `<p> Error al calcular: ${error.message}</p>`;
+    }
+}
+
 /* CÁLCULO EXTREMOS ABSOLUTOS */
 function analizarAbsolutos2Vars1Restriccion() {
   const fStrRaw = document.getElementById("fxy").value;
   const gStrRaw = document.getElementById("gxy").value;
   const resultadosDiv = document.getElementById("resultados-lagrange");
-
   resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
   try {
     const fExpr = math.parse(fStrRaw);
     const gExpr = math.parse(gStrRaw);
 
-    const fx = math.derivative(fExpr, 'x').toString();
-    const fy = math.derivative(fExpr, 'y').toString();
-    const gx = math.derivative(gExpr, 'x').toString();
-    const gy = math.derivative(gExpr, 'y').toString();
+    const fxExpr = math.derivative(fExpr, 'x');
+    const fyExpr = math.derivative(fExpr, 'y');
+    const gxExpr = math.derivative(gExpr, 'x');
+    const gyExpr = math.derivative(gExpr, 'y');
+
+    const fx = fxExpr.compile();
+    const fy = fyExpr.compile();
+    const gx = gxExpr.compile();
+    const gy = gyExpr.compile();
+    const g = gExpr.compile();
+    const f = fExpr.compile();
+
+    const puntosCriticos = [];
+
+    for (let x = -5; x <= 5; x += 0.1) {
+      for (let y = -5; y <= 5; y += 0.1) {
+        try {
+          const scope = { x, y };
+          const gxVal = gx.evaluate(scope);
+          const gyVal = gy.evaluate(scope);
+          console.log({ x, y, fxVal, fyVal, gxVal, gyVal, lambdaX, lambdaY, gVal });
+          // evitamos división por cero en gradiente g
+          if (Math.abs(gxVal) < 1e-3 && Math.abs(gyVal) < 1e-3) continue;
+
+          const fxVal = fx.evaluate(scope);
+          const fyVal = fy.evaluate(scope);
+
+          if (Math.abs(gxVal) < 1e-5 || Math.abs(gyVal) < 1e-5) {
+             continue;
+          }
+          const lambdaX = fxVal / gxVal;
+          const lambdaY = fyVal / gyVal;
+
+          const gVal = g.evaluate(scope);
+
+          // validamos si cumple g ≈ 0 y λs parecidos
+          if (Math.abs(lambdaX - lambdaY) < 1e-2 && Math.abs(gVal) < 1e-2) {
+            const valorF = f.evaluate(scope);
+            puntosCriticos.push({ x: Number(x.toFixed(3)), y: Number(y.toFixed(3)), fval: valorF });
+          }
+        } catch {
+          continue;
+        }
+      }
+    }
 
     let html = `
       <p><strong>f(x,y):</strong> ${fStrRaw}</p>
       <p><strong>g(x,y):</strong> ${gStrRaw} = 0</p>
-      <p><strong>Gradiente de f:</strong><br>∇f = (${fx}) i + (${fy}) j</p>
-      <p><strong>Gradiente de g:</strong><br>∇g = (${gx}) i + (${gy}) j</p>
+      <p><strong>∇f:</strong><br>(${fxExpr.toString()}) i + (${fyExpr.toString()}) j</p>
+      <p><strong>∇g:</strong><br>(${gxExpr.toString()}) i + (${gyExpr.toString()}) j</p>
     `;
+
+    if (puntosCriticos.length === 0) {
+      html += `<p>No se encontraron puntos que cumplan el sistema de Lagrange.</p>`;
+    } else {
+      const fvals = puntosCriticos.map(p => p.fval);
+      const minVal = Math.min(...fvals);
+      const maxVal = Math.max(...fvals);
+
+      html += `<h3>Puntos críticos encontrados</h3><ul>`;
+      puntosCriticos.forEach(p => {
+        let tipo = "";
+        if (Math.abs(p.fval - maxVal) < 1e-2) tipo = "Máximo absoluto";
+        if (Math.abs(p.fval - minVal) < 1e-2) tipo = "Mínimo absoluto";
+        html += `<li>(x, y) = (${p.x}, ${p.y}) → f = ${p.fval.toFixed(3)} <strong>${tipo}</strong></li>`;
+      });
+      html += `</ul>`;
+    }
+
     resultadosDiv.innerHTML = html;
 
+    if (puntosCriticos.length > 0) {
+      graficarRelativos2Var(fStrRaw, puntosCriticos.map(p => ({
+        x: p.x,
+        y: p.y,
+        tipo: "crítico",
+        valor: p.fval
+      })));
+    }
+
   } catch (error) {
-    console.error("Error en gradientes 2 variables:", error);
-    resultadosDiv.innerHTML = "<p>Ocurrió un error en la expresión. Verificá los campos f y g.</p>";
+    console.error("Error en Lagrange:", error);
+    resultadosDiv.innerHTML = "<p>Error al analizar los extremos absolutos. Verificá la sintaxis.</p>";
   }
 }
 
