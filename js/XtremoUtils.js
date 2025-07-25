@@ -37,16 +37,27 @@ export function clasificarPunto(fxx, fyy, fxy, x, y) {
     let clasificacion = "";
 
     if (Math.abs(d) < 1e-6) {
-        tipo = "g ≈ 0 ⇒ Criterio no decide";
+        tipo = "indefinido";
+        clasificacion = "g ≈ 0 ⇒ Criterio no concluyente";
     } else if (d < 0) {
-        tipo = "g < 0 ⇒ Punto de ensilladura";
+        tipo = "silla";
+        clasificacion = "g < 0 ⇒ Punto de silla";
     } else {
-        tipo = "g > 0 ⇒ Extremo";
-        clasificacion = `fxx = ${formatearNumero(fxxVal)} ⇒ ${clasificarExtremo(fxxVal)}`;
+        if (fxxVal > 0) {
+            tipo = "mínimo";
+            clasificacion = `g > 0 y fxx > 0 ⇒ Mínimo relativo`;
+        } else if (fxxVal < 0) {
+            tipo = "máximo";
+            clasificacion = `g > 0 y fxx < 0 ⇒ Máximo relativo`;
+        } else {
+            tipo = "indefinido";
+            clasificacion = "fxx = 0 ⇒ Criterio no concluyente";
+        }
     }
 
     return { tipo, clasificacion, d, fxxVal };
 }
+
 
 export function formatearNumero(num) {
     return Number.isInteger(num) ? num.toString() : num.toFixed(4);
@@ -125,7 +136,7 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
             return null;
         }
     });
-    
+
     const colores = puntosCriticos.map(p =>
         p.tipo?.includes("mínimo") ? "blue" :
         p.tipo?.includes("máximo") ? "red" :

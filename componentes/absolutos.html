@@ -27,17 +27,17 @@
     <div id="form-3vars" style="display: none;">
       <label for="fxyz">Función: f(x, y, z):</label>
       <div class="input-con-limpiar">
-        <input type="text" id="fxyz" required placeholder="Función f(x,y,z)"/>
+        <input type="text" id="fxyz" required placeholder="Ej: x*y*z"/>
         <button id="limpiarAbsolutosBtn" type="button" class="btn-limpiar" title="Limpiar">
           <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
         </button>
       </div>
       <label for="g1xyz">Restricción 1: g(x, y, z):</label>
-      <input type="text" id="g1xyz" />
+      <input type="text" id="gxyz" required placeholder="Ej: x+y+z-32"/>
       <label for="g2xyz">Restricción 2: h(x, y, z):</label>
-      <input type="text" id="g2xyz" />
+      <input type="text" id="hxyz" required placeholder="Ej: x-y+z"/>
     </div>
-    <button type="submit" class="btn">Analizar</button>
+    <button type="submit" class="btn">Hallar extremos absolutos</button>
   </form>
   <section id="resultados-lagrange">
     <div id="texto-resultados"></div>

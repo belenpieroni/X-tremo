@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.preventDefault();
                 const modo3vars = document.getElementById("modoAbs2vars")?.checked ?? false;
                 if (modo3vars) {
-                    alert("El análisis para 3 variables aún no está implementado.");
+                    analizarAbsolutos3Vars2Restricciones();
                 } else {
                     analizarAbsolutos2Vars1Restriccion();
                 }
@@ -461,21 +461,21 @@ function analizarRelativos2Var() {
         // Construcción de salida
         let html = `
         <div class="resultado-bloque">
-        <h3>Función</h3>
-        <p>f(x, y) = ${funcionStr}</p>
+            <h3>Función</h3>
+            <p>f(x, y) = ${funcionStr}</p>
         </div>
 
         <div class="resultado-bloque">
-        <h3>Primeras Derivadas</h3>
-        <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
-        <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
+            <h3>Primeras Derivadas</h3>
+            <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
+            <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
         </div>
         `;
 
         if (puntosCriticos.length === 0) {
             html += `
             <div class="resultado-bloque">
-            <p>No se encontraron puntos críticos.</p>
+                <p>No se encontraron puntos críticos.</p>
             </div>`;
             resultadosDiv.innerHTML = html;
             return;
@@ -483,34 +483,49 @@ function analizarRelativos2Var() {
 
         html += `
         <div class="resultado-bloque">
-        <h3>Puntos críticos encontrados</h3>
-        <ul class="puntos-lista">
-            ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
-        </ul>
+            <h3>Puntos críticos encontrados</h3>
+            <ul class="puntos-lista">
+                ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
+            </ul>
         </div>
 
         <div class="resultado-bloque">
-        <h3>Construcción de g(x, y)</h3>
-        <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
-        <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
-        <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
-        <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
-        <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
+            <h3>Construcción de g(x, y)</h3>
+            <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
+            <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
+            <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
+            <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
+            <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
         </div>
 
         <div class="resultado-bloque">
-        <h3>Clasificación de cada punto</h3>
-        <ul class="puntos-lista">
-            ${puntosCriticos.map(p => {
-                const { tipo, clasificacion, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
-                return `
-                <li>
-                <strong>Punto:</strong> (${p.x}, ${p.y})<br>
-                g = ${formatearNumero(d)} ⇒ ${tipo}<br>
-                ${clasificacion ? clasificacion : ""}
-                </li>`;
-            }).join("")}
-        </ul>
+            <h3>Clasificación de cada punto</h3>
+            <ul class="puntos-lista">
+                ${puntosCriticos.map(p => {
+                    const { tipo, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
+                    let color = "";
+                    let emoji = "";
+
+                    if (tipo.includes("mínimo")) {
+                        color = "color: blue; font-weight: bold;";
+                        emoji = "🟦";
+                    } else if (tipo.includes("máximo")) {
+                        color = "color: red; font-weight: bold;";
+                        emoji = "🟥";
+                    } else if (tipo.includes("silla")) {
+                        color = "color: black;";
+                        emoji = "⚫";
+                    } else {
+                        emoji = "⚪";
+                    }
+
+                    return `
+                    <li>
+                        <strong>Punto:</strong> (${p.x}, ${p.y})<br>
+                        g = ${formatearNumero(d)} ⇒ <span style="${color}">${emoji} ${tipo}</span>
+                    </li>`;
+                }).join("")}
+            </ul>
         </div>
         `;
 
@@ -623,7 +638,7 @@ function analizarAbsolutos2Vars1Restriccion() {
             html += `
                 <li>
                     <strong>(x, y)</strong> = (${p.x}, ${p.y}) &nbsp; → &nbsp; 
-                    <strong>f = ${p.fval.toFixed(3)}</strong> 
+                    <strong>f(x, y) = ${formatearNumero(p.fval)}</strong> 
                     ${tipo ? `<span style="${tipoColor} font-weight: bold;">${tipo}</span>` : ""}
                 </li>`;
         });
@@ -654,43 +669,110 @@ function analizarAbsolutos2Vars1Restriccion() {
 }
 
 function analizarAbsolutos3Vars2Restricciones() {
-  const fStrRaw = document.getElementById("fxyz").value;
-  const g1StrRaw = document.getElementById("g1xyz").value;
-  const g2StrRaw = document.getElementById("g2xyz").value;
-  const resultadosDiv = document.getElementById("resultados-lagrange");
+    const fStr = document.getElementById("fxyz").value.trim();
+    const gStr = document.getElementById("gxyz").value.trim();
+    const hStr = document.getElementById("hxyz").value.trim();
+    const resultadosDiv = document.getElementById("texto-resultados");
+    resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
-  resultadosDiv.innerHTML = "<p>Calculando gradientes con math.js...</p>";
+    try {
+        const fExpr = math.parse(fStr);
+        const gExpr = math.parse(gStr);
+        const hExpr = math.parse(hStr);
 
-  try {
-    const fExpr = math.parse(fStrRaw);
-    const g1Expr = math.parse(g1StrRaw);
-    const g2Expr = math.parse(g2StrRaw);
+        const fxExpr = math.derivative(fExpr, "x");
+        const fyExpr = math.derivative(fExpr, "y");
+        const fzExpr = math.derivative(fExpr, "z");
 
-    const fx = math.derivative(fExpr, 'x').toString();
-    const fy = math.derivative(fExpr, 'y').toString();
-    const fz = math.derivative(fExpr, 'z').toString();
+        const gxExpr = math.derivative(gExpr, "x");
+        const gyExpr = math.derivative(gExpr, "y");
+        const gzExpr = math.derivative(gExpr, "z");
 
-    const g1x = math.derivative(g1Expr, 'x').toString();
-    const g1y = math.derivative(g1Expr, 'y').toString();
-    const g1z = math.derivative(g1Expr, 'z').toString();
+        const hxExpr = math.derivative(hExpr, "x");
+        const hyExpr = math.derivative(hExpr, "y");
+        const hzExpr = math.derivative(hExpr, "z");
 
-    const g2x = math.derivative(g2Expr, 'x').toString();
-    const g2y = math.derivative(g2Expr, 'y').toString();
-    const g2z = math.derivative(g2Expr, 'z').toString();
+        // Definimos el sistema de ecuaciones
+        function sistema(vars) {
+            const [x, y, z, mu, lambda] = vars;
+            return [
+                fxExpr.evaluate({x, y, z}) - mu * gxExpr.evaluate({x, y, z}) - lambda * hxExpr.evaluate({x, y, z}),
+                fyExpr.evaluate({x, y, z}) - mu * gyExpr.evaluate({x, y, z}) - lambda * hyExpr.evaluate({x, y, z}),
+                fzExpr.evaluate({x, y, z}) - mu * gzExpr.evaluate({x, y, z}) - lambda * hzExpr.evaluate({x, y, z}),
+                gExpr.evaluate({x, y, z}),
+                hExpr.evaluate({x, y, z})
+            ];
+        }
 
-    let html = `
-      <p><strong>f(x,y,z):</strong> ${fStrRaw}</p>
-      <p><strong>g₁(x,y,z):</strong> ${g1StrRaw} = 0</p>
-      <p><strong>g₂(x,y,z):</strong> ${g2StrRaw} = 0</p>
-      <p><strong>Gradiente de f:</strong><br>∇f = (${fx}) i + (${fy}) j + (${fz}) k</p>
-      <p><strong>Gradiente de g₁:</strong><br>∇g₁ = (${g1x}) i + (${g1y}) j + (${g1z}) k</p>
-      <p><strong>Gradiente de g₂:</strong><br>∇g₂ = (${g2x}) i + (${g2y}) j + (${g2z}) k</p>
-    `;
-    resultadosDiv.innerHTML = html;
+        // Método Newton-Raphson multivariable
+        function newtonRaphsonSystem(f, x0, tol = 1e-8, maxIter = 100) {
+            let x = x0;
+            for (let iter = 0; iter < maxIter; iter++) {
+                const fx = f(x);
+                const norm = Math.sqrt(fx.reduce((sum, val) => sum + val*val, 0));
+                if (norm < tol) return x;
 
-  } catch (error) {
-    console.error("Error en gradientes 3 variables:", error);
-    resultadosDiv.innerHTML = "<p>Error al calcular. Verificá las expresiones de f, g₁ y g₂.</p>";
-  }
+                // Aproximamos la Jacobiana numéricamente
+                const J = [];
+                const h = 1e-6;
+                for (let i = 0; i < x.length; i++) {
+                    const xh1 = x.slice();
+                    const xh2 = x.slice();
+                    xh1[i] += h;
+                    xh2[i] -= h;
+                    const df = f(xh1).map((val, idx) => (val - f(xh2)[idx]) / (2*h));
+                    J.push(df);
+                }
+
+                const JT = math.transpose(J);
+                const delta = math.lusolve(JT, math.multiply(-1, fx));
+
+                x = x.map((xi, idx) => xi + delta[idx][0]);
+            }
+            throw new Error("No converge");
+        }
+
+        // Intentamos con un guess razonable
+        const guess = [8, 16, 8, 1, 1];
+        const sol = newtonRaphsonSystem(sistema, guess);
+
+        const [x, y, z, mu, lambda] = sol;
+        const valorF = fExpr.evaluate({ x, y, z });
+        const sistemaHtml = `
+            <div class="absolutos-bloque">
+            <h3>Sistema de Ecuaciones de Lagrange</h3>
+            <p>
+                Sistema de ecuaciones:
+            </p>
+            <ul>
+                <li>fx = μ · gx + λ · hx → <code>${fxExpr.toString()} = μ · ${gxExpr.toString()} + λ · ${hxExpr.toString()}</code></li>
+                <li>fy = μ · gy + λ · hy → <code>${fyExpr.toString()} = μ · ${gyExpr.toString()} + λ · ${hyExpr.toString()}</code></li>
+                <li>fz = μ · gz + λ · hz → <code>${fzExpr.toString()} = μ · ${gzExpr.toString()} + λ · ${hzExpr.toString()}</code></li>
+                <li><code>${gExpr.toString()} = 0</code> (primera restricción)</li>
+                <li><code>${hExpr.toString()} = 0</code> (segunda restricción)</li>
+            </ul>
+            </div>
+            `;
+
+        const resultadoHtml = `
+            <div class="absolutos-bloque">
+                <h3>Resultado del Análisis</h3>
+                <p><strong>Punto:</strong> <code>(x, y, z) = (${formatearNumero(x)}, ${formatearNumero(y)}, ${formatearNumero(z)})</code></p>
+                <h3><strong>Multiplicadores de Lagrange:</strong></h3>
+                <p>
+                    μ = <span style="color: var(--relativo-primario); font-weight: 600;">${formatearNumero(mu)}</span>, 
+                    λ = <span style="color: var(--relativo-primario); font-weight: 600;">${formatearNumero(lambda)}</span>
+                </p>
+                <p><strong>Valor de la función:</strong> 
+                    <span>f(x, y, z) = ${formatearNumero(valorF)}</span>
+                </p>
+            </div>
+        `;
+        
+        resultadosDiv.innerHTML = sistemaHtml + resultadoHtml;
+
+    } catch (error) {
+        console.error(error);
+        resultadosDiv.innerHTML = "<p>Error al resolver. Verificá la sintaxis de entrada.</p>";
+    }
 }
-
