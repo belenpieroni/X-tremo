@@ -527,100 +527,130 @@ function analizarRelativos2Var() {
 
 /* CÁLCULO EXTREMOS ABSOLUTOS */
 function analizarAbsolutos2Vars1Restriccion() {
-  const fStrRaw = document.getElementById("fxy").value;
-  const gStrRaw = document.getElementById("gxy").value;
-  const resultadosDiv = document.getElementById("resultados-lagrange");
-  resultadosDiv.innerHTML = "<p>Calculando...</p>";
+    const fStrRaw = document.getElementById("fxy").value.trim().replace("=0", "");
+    const gStrRaw = document.getElementById("gxy").value.trim().replace("=0", "");
+    const resultadosTextDiv = document.getElementById("texto-resultados");
+    resultadosTextDiv.innerHTML = "<p>Calculando...</p>";
 
-  try {
-    const fExpr = math.parse(fStrRaw);
-    const gExpr = math.parse(gStrRaw);
+    try {
+        const fExpr = math.parse(fStrRaw);
+        const gExpr = math.parse(gStrRaw);
 
-    const fxExpr = math.derivative(fExpr, 'x');
-    const fyExpr = math.derivative(fExpr, 'y');
-    const gxExpr = math.derivative(gExpr, 'x');
-    const gyExpr = math.derivative(gExpr, 'y');
+        const fxExpr = math.derivative(fExpr, 'x');
+        const fyExpr = math.derivative(fExpr, 'y');
+        const gxExpr = math.derivative(gExpr, 'x');
+        const gyExpr = math.derivative(gExpr, 'y');
 
-    const fx = fxExpr.compile();
-    const fy = fyExpr.compile();
-    const gx = gxExpr.compile();
-    const gy = gyExpr.compile();
-    const g = gExpr.compile();
-    const f = fExpr.compile();
+        const fx = fxExpr.compile();
+        const fy = fyExpr.compile();
+        const gx = gxExpr.compile();
+        const gy = gyExpr.compile();
+        const g = gExpr.compile();
+        const f = fExpr.compile();
 
-    const puntosCriticos = [];
+        const puntosCriticos = [];
 
-    for (let x = -5; x <= 5; x += 0.1) {
-      for (let y = -5; y <= 5; y += 0.1) {
-        try {
-          const scope = { x, y };
-          const gxVal = gx.evaluate(scope);
-          const gyVal = gy.evaluate(scope);
-          console.log({ x, y, fxVal, fyVal, gxVal, gyVal, lambdaX, lambdaY, gVal });
-          // evitamos división por cero en gradiente g
-          if (Math.abs(gxVal) < 1e-3 && Math.abs(gyVal) < 1e-3) continue;
+        for (let x = -5; x <= 5; x += 0.1) {
+            for (let y = -5; y <= 5; y += 0.1) {
+                try {
+                    const scope = { x, y };
+                    const gxVal = gx.evaluate(scope);
+                    const gyVal = gy.evaluate(scope);
+                    if (Math.abs(gxVal) < 1e-3 && Math.abs(gyVal) < 1e-3) continue;
 
-          const fxVal = fx.evaluate(scope);
-          const fyVal = fy.evaluate(scope);
+                    const fxVal = fx.evaluate(scope);
+                    const fyVal = fy.evaluate(scope);
+                    if (Math.abs(gxVal) < 1e-5 || Math.abs(gyVal) < 1e-5) continue;
 
-          if (Math.abs(gxVal) < 1e-5 || Math.abs(gyVal) < 1e-5) {
-             continue;
-          }
-          const lambdaX = fxVal / gxVal;
-          const lambdaY = fyVal / gyVal;
+                    const lambdaX = fxVal / gxVal;
+                    const lambdaY = fyVal / gyVal;
+                    const gVal = g.evaluate(scope);
 
-          const gVal = g.evaluate(scope);
-
-          // validamos si cumple g ≈ 0 y λs parecidos
-          if (Math.abs(lambdaX - lambdaY) < 1e-2 && Math.abs(gVal) < 1e-2) {
-            const valorF = f.evaluate(scope);
-            puntosCriticos.push({ x: Number(x.toFixed(3)), y: Number(y.toFixed(3)), fval: valorF });
-          }
-        } catch {
-          continue;
+                    if (Math.abs(lambdaX - lambdaY) < 0.05 && Math.abs(gVal) < 0.05) {
+                        const valorF = f.evaluate(scope);
+                        puntosCriticos.push({ x: Number(x.toFixed(3)), y: Number(y.toFixed(3)), fval: valorF });
+                    }
+                } catch {
+                    continue;
+                }
+            }
         }
-      }
+
+        let html = `
+            <div class="absolutos-bloque">
+                <h3>Funciones</h3>
+                <p><strong>Función: f(x,y):</strong> <code>${fStrRaw}</code></p>
+                <p><strong>Restricción: g(x,y):</strong> <code>${gStrRaw} = 0</code></p>
+            </div>
+
+            <div class="absolutos-bloque">
+                <h3>Gradientes</h3>
+                <p><strong>∇f:</strong> <code>(${fxExpr.toString()}) i + (${fyExpr.toString()}) j</code></p>
+                <p><strong>∇g:</strong> <code>(${gxExpr.toString()}) i + (${gyExpr.toString()}) j</code></p>
+            </div>
+        `;
+
+        if (puntosCriticos.length === 0) {
+            html += `
+                <div class="absolutos-bloque">
+                    <p>No se encontraron puntos que cumplan el sistema de Lagrange en el rango analizado.</p>
+                </div>`;
+            resultadosTextDiv.innerHTML = html;
+            return;
+        }
+
+        const fvals = puntosCriticos.map(p => p.fval);
+        const minVal = Math.min(...fvals);
+        const maxVal = Math.max(...fvals);
+
+        html += `
+            <div class="absolutos-bloque">
+                <h3>Puntos críticos encontrados</h3>
+                <ul>
+        `;
+
+        puntosCriticos.forEach(p => {
+            let tipo = "";
+            let tipoColor = "";
+            if (Math.abs(p.fval - maxVal) < 1e-2) {
+                tipo = "🟥 Máximo absoluto";
+                tipoColor = "color: red;";
+            }
+            if (Math.abs(p.fval - minVal) < 1e-2) {
+                tipo = "🟦 Mínimo absoluto";
+                tipoColor = "color: blue;";
+            }
+            html += `
+                <li>
+                    <strong>(x, y)</strong> = (${p.x}, ${p.y}) &nbsp; → &nbsp; 
+                    <strong>f = ${p.fval.toFixed(3)}</strong> 
+                    ${tipo ? `<span style="${tipoColor} font-weight: bold;">${tipo}</span>` : ""}
+                </li>`;
+        });
+
+        html += `
+                </ul>
+            </div>
+        `;
+
+        resultadosTextDiv.innerHTML = html;
+
+        graficar2Var(
+            fStrRaw,
+            puntosCriticos.map(p => ({
+                x: p.x,
+                y: p.y,
+                tipo: (Math.abs(p.fval - minVal) < 1e-2) ? "mínimo" :
+                      (Math.abs(p.fval - maxVal) < 1e-2) ? "máximo" : "crítico",
+                valor: p.fval
+            })),
+            gStrRaw
+        );
+
+    } catch (error) {
+        console.error("Error en Lagrange:", error);
+        resultadosTextDiv.innerHTML = "<p>Error al analizar los extremos absolutos. Verificá la sintaxis.</p>";
     }
-
-    let html = `
-      <p><strong>f(x,y):</strong> ${fStrRaw}</p>
-      <p><strong>g(x,y):</strong> ${gStrRaw} = 0</p>
-      <p><strong>∇f:</strong><br>(${fxExpr.toString()}) i + (${fyExpr.toString()}) j</p>
-      <p><strong>∇g:</strong><br>(${gxExpr.toString()}) i + (${gyExpr.toString()}) j</p>
-    `;
-
-    if (puntosCriticos.length === 0) {
-      html += `<p>No se encontraron puntos que cumplan el sistema de Lagrange.</p>`;
-    } else {
-      const fvals = puntosCriticos.map(p => p.fval);
-      const minVal = Math.min(...fvals);
-      const maxVal = Math.max(...fvals);
-
-      html += `<h3>Puntos críticos encontrados</h3><ul>`;
-      puntosCriticos.forEach(p => {
-        let tipo = "";
-        if (Math.abs(p.fval - maxVal) < 1e-2) tipo = "Máximo absoluto";
-        if (Math.abs(p.fval - minVal) < 1e-2) tipo = "Mínimo absoluto";
-        html += `<li>(x, y) = (${p.x}, ${p.y}) → f = ${p.fval.toFixed(3)} <strong>${tipo}</strong></li>`;
-      });
-      html += `</ul>`;
-    }
-
-    resultadosDiv.innerHTML = html;
-
-    if (puntosCriticos.length > 0) {
-      graficarRelativos2Var(fStrRaw, puntosCriticos.map(p => ({
-        x: p.x,
-        y: p.y,
-        tipo: "crítico",
-        valor: p.fval
-      })));
-    }
-
-  } catch (error) {
-    console.error("Error en Lagrange:", error);
-    resultadosDiv.innerHTML = "<p>Error al analizar los extremos absolutos. Verificá la sintaxis.</p>";
-  }
 }
 
 function analizarAbsolutos3Vars2Restricciones() {

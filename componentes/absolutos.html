@@ -14,13 +14,13 @@
     <div id="form-2vars">
       <label for="fxy">Función: f(x, y):</label>
       <div class="input-con-limpiar">
-        <input type="text" id="fxy" required placeholder="Función f(x,y)"/>
+        <input type="text" id="fxy" required placeholder="Ej: x^2-y^2"/>
         <button id="limpiarAbsolutosBtn" type="button" class="btn-limpiar" title="Limpiar">
           <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
         </button>
       </div>
-      <label for="gxy">Restricción g(x, y):</label>
-      <input type="text" id="gxy" required />
+      <label for="gxy">Restricción g(x, y)=0:</label>
+      <input type="text" id="gxy" required placeholder="Ej: x-2y+6"/>
     </div>
 
     <!-- Bloque para f(x,y,z) con dos restricciones -->
@@ -39,7 +39,8 @@
     </div>
     <button type="submit" class="btn">Analizar</button>
   </form>
-
-  <div id="resultados-lagrange"></div>
-  <canvas id="grafico-funcion"></canvas>
+  <section id="resultados-lagrange">
+    <div id="texto-resultados"></div>
+    <div id="grafico-3d"></div>
+  </section>
 </section>
