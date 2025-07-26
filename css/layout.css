@@ -40,7 +40,7 @@ body {
 }
 
 /* Link general */
-.teoria-link, .inicio-link {
+.teoria-link, .inicio-link, .ayuda-link {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -54,15 +54,22 @@ body {
     transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.teoria-link:hover, .inicio-link:hover {
+.teoria-link:hover, .inicio-link:hover, .ayuda-link:hover {
     color: var(--resaltador);
 }
 
-.teoria-link img, .inicio-link img {
+.teoria-link img, .inicio-link img, .ayuda-link img {
     width: 28px;
     height: 28px;
     margin-bottom: 4px;
     transition: filter 0.2s ease;
+}
+
+.contenedor-links {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
 }
 
 .inicio-link img {
@@ -70,7 +77,8 @@ body {
 }
 
 .teoria-link:hover img,
-.inicio-link:hover img {
+.inicio-link:hover img,
+.ayuda-link:hover img {
     filter: brightness(0) saturate(100%) invert(77%) sepia(13%) saturate(846%) hue-rotate(125deg) brightness(90%) contrast(88%);
 }
 

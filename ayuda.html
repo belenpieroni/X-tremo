@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>X-tremo – Teoría</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap">
+  <link rel="stylesheet" href="css/x-tremo.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/teoria.css">
+  <link rel="icon" href="imagenes/favicon.ico" type="image/x-icon">
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div id="header-placeholder"></div>
+    <main class="teoria-conteiner">
+        <section class="bloque-teorico">
+            <h2>Ayuda: ¿Cómo usar la Calculadora X-tremo?</h2>
+            <p>La Calculadora <strong>X-tremo</strong> te permite encontrar extremos relativos y absolutos de funciones multivariables de manera visual, interactiva y guiada. Según el tipo de análisis que necesites, podés elegir entre distintos modos de funcionamiento:</p>
+        </section>
+        <section class="bloque-teorico">
+            <h3>Extremos Relativos</h3>
+            <p>Para analizar puntos críticos sin restricciones:</p>
+            <ol>
+                <li>Seleccioná el <strong>modo relativo</strong> desde el panel lateral.</li>
+                <li>Elegí si tu función depende de una o dos variables.</li>
+                <li>Ingresá la función en el campo correspondiente. Ejemplo:
+                <br><code>f(x, y) = x² - y²</code>
+                </li>
+                <li>Presioná <strong>Analizar</strong>. El sistema calculará derivadas, mostrará el discriminante y clasificará los puntos críticos.</li>
+            </ol>
+        </section>
+        <section class="bloque-teorico">
+            <h3>Extremos Absolutos con Restricción</h3>
+            <p>Cuando hay una condición que debe cumplirse, se aplica el método de Lagrange:</p>
+            <ol>
+                <li>Seleccioná el <strong>modo absoluto</strong> en la interfaz.</li>
+                <li>Elegí entre funciones de dos o tres variables.</li>
+                <li>Ingresá:
+                <ul>
+                    <li><code>f(x, y, z)</code>: función objetivo. Ejemplo: <code>x·y·z</code></li>
+                    <li><code>g(x, y, z)</code> y <code>h(x, y, z)</code>: restricciones. Ejemplo: <code>x + y + z - 32 = 0</code>, <code>x - y + z = 0</code></li>
+                </ul>
+                </li>
+                <li>Presioná <strong>Analizar</strong>. Se mostrarán los gradientes, el sistema de ecuaciones y la solución hallada, incluyendo los multiplicadores de Lagrange (μ y λ).</li>
+            </ol>
+        </section>
+        <section class="bloque-teorico">
+            <h3>Notación permitida</h3>
+            <p>Podés escribir funciones usando operadores como:</p>
+            <ul>
+                <li><code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>^</code> para potencias</li>
+                <li><code>sin(x)</code>, <code>cos(y)</code>, <code>log(z)</code>, etc.</li>
+                <li>Paréntesis siempre que sea necesario para agrupar</li>
+            </ul>
+        </section>
+    </main>
+    <footer>
+        <div class="container">
+            <p>&copy; Análisis Matemático II. Universidad Tecnologica Nacional FRLP.</p>
+            <p>Pieroni, María Belén</p>
+        </div>
+    </footer>
+    <script type="module" src="js/app.js"></script>
+    </body>
+</html>

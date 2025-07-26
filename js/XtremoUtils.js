@@ -1,4 +1,5 @@
 // XtremoUtils.js
+let grafico = null;
 
 export function personalizarHeader() {
     const contenedor = document.getElementById("header-dinamico");
@@ -7,26 +8,69 @@ export function personalizarHeader() {
     contenedor.innerHTML = "";
 
     const path = window.location.pathname;
-    const isIndex = path.endsWith("/") || path.endsWith("index.html");
-    const isTeoria = path.includes("teoria.html");
+    const isIndex = path.endsWith("index.html") || path === "/" || path === "/index";
+    const isTeoria = path.endsWith("teoria.html");
+    const isAyuda = path.endsWith("ayuda.html");
 
     if (isIndex) {
         contenedor.innerHTML = `
             <a href="teoria.html" class="teoria-link">
                 <img src="imagenes/gorrito.png" alt="Teoría">
                 <span>Teoría</span>
+            </a>
+            <a href="ayuda.html" class="ayuda-link">
+                <img src="imagenes/ayuda.png" alt="Ayuda">
+                <span>Ayuda</span>
             </a>`;
     } else if (isTeoria) {
         contenedor.innerHTML = `
             <a href="index.html" class="inicio-link">
                 <img src="imagenes/calculadora.png" alt="Inicio">
                 <span>Inicio</span>
+            </a>
+            <a href="ayuda.html" class="ayuda-link">
+                <img src="imagenes/ayuda.png" alt="Ayuda">
+                <span>Ayuda</span>
+            </a>`;
+    } else if (isAyuda) {
+        contenedor.innerHTML = `
+            <a href="index.html" class="inicio-link">
+                <img src="imagenes/calculadora.png" alt="Inicio">
+                <span>Inicio</span>
+            </a>
+            <a href="teoria.html" class="teoria-link">
+                <img src="imagenes/gorrito.png" alt="Teoría">
+                <span>Teoría</span>
             </a>`;
     }
 }
 
-export function clasificarExtremo(fxxVal) {
-    return fxxVal > 0 ? "Mínimo relativo" : "Máximo relativo";
+export function limpiarRelativos() {
+    document.getElementById("input-funcion").value = "";
+    document.getElementById("input-punto-x").value = "";
+    document.getElementById("input-punto-y").value = "";
+
+    const resultadosDiv = document.getElementById("texto-resultados");
+    resultadosDiv.innerHTML = "";
+
+    if (grafico) {
+        grafico.destroy();
+        grafico = null;
+    }
+}
+
+export function limpiarAbsolutos() {
+    document.getElementById("input-funcion-abs").value = "";
+    document.getElementById("input-restriccion-1").value = "";
+    document.getElementById("input-restriccion-2").value = "";
+
+    const resultadosDiv = document.getElementById("texto-resultados");
+    resultadosDiv.innerHTML = "";
+
+    if (grafico) {
+        grafico.destroy();
+        grafico = null;
+    }
 }
 
 export function clasificarPunto(fxx, fyy, fxy, x, y) {

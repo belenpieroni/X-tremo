@@ -1,5 +1,4 @@
 import {
-    clasificarExtremo,
     clasificarPunto,
     personalizarHeader,
     formatearNumero,
@@ -14,9 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             document.getElementById("header-placeholder").innerHTML = data;
             personalizarHeader();
-        })
-        .catch(error => {
-            console.error("Error al cargar el header:", error);
         });
 
     // Sidebar Botones y contenido principal
@@ -673,6 +669,10 @@ function analizarAbsolutos3Vars2Restricciones() {
     const gStr = document.getElementById("gxyz").value.trim();
     const hStr = document.getElementById("hxyz").value.trim();
     const resultadosDiv = document.getElementById("texto-resultados");
+    if (!resultadosDiv) {
+        console.warn("No se encontró el contenedor #texto-resultados");
+        return;
+    }
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
     try {
