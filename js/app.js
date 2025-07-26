@@ -2,9 +2,56 @@ import {
     clasificarPunto,
     personalizarHeader,
     formatearNumero,
-    graficar2Var,
+    graficar2Var, 
     encontrarCeros
 } from './XtremoUtils.js';
+
+function limpiarRelativo1Var() {
+    const input = document.getElementById("funcion-input-x");
+    if (input) input.value = "";
+    const resultados = document.getElementById("resultados");
+    if (resultados) resultados.innerHTML = "";
+    if (grafico) {
+        grafico.destroy();
+        grafico = null;
+    }
+}
+
+function limpiarRelativo2Var() {
+    const input = document.getElementById("funcion-input-xy");
+    if (input) input.value = "";
+    const resultados = document.getElementById("resultados");
+    if (resultados) resultados.innerHTML = "";
+    const grafico3D = document.getElementById("grafico-3d");
+    if (grafico3D) grafico3D.innerHTML = "";
+}
+
+function limpiarAbsoluto2Var() {
+    ["fxy", "gxy"].forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = "";
+    });
+    const resultados = document.getElementById("resultados-lagrange");
+    if (resultados) resultados.innerHTML = "";
+    if (grafico) {
+        const ctx = grafico.getContext("2d");
+        ctx.clearRect(0, 0, grafico.width, grafico.height);
+    }
+}
+
+function limpiarAbsoluto3Var() {
+    ["fxyz", "gxyz", "hxyz"].forEach(id => {
+        const input = document.getElementById(id);
+        console.log(`Limpiando ${id}`, input); // Agregá esto para debug
+        if (input) input.value = "";
+    });
+    const resultados = document.getElementById("resultados-lagrange");
+    if (resultados) resultados.innerHTML = "";
+    if (grafico) {
+        const ctx = grafico.getContext("2d");
+        ctx.clearRect(0, 0, grafico.width, grafico.height);
+    }
+}
 
 document.addEventListener("DOMContentLoaded", function () {
     // Header
@@ -13,6 +60,9 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             document.getElementById("header-placeholder").innerHTML = data;
             personalizarHeader();
+        })
+        .catch(error => {
+            console.error("Error al cargar el header:", error);
         });
 
     // Sidebar Botones y contenido principal
@@ -33,42 +83,28 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
             contenido.innerHTML = data;
             window.scrollTo({ top: 0, behavior: "smooth" });
-            // Botón Limpiar Relativos
-            const limpiarRelativosBtn = document.getElementById("limpiarRelativosBtn");
-            if (limpiarRelativosBtn) {
-                limpiarRelativosBtn.addEventListener("click", function () {
-                    const funcionInput = document.getElementById("funcion-input");
-                    if (funcionInput) funcionInput.value = "";
-                    const resultadosDiv = document.getElementById("resultados");
-                    if (resultadosDiv) resultadosDiv.innerHTML = "";
-                    if (grafico) {
-                        grafico.destroy();
-                        grafico = null;
-                    }
-
-                    const grafico3D = document.getElementById("grafico-3d");
-                    if (grafico3D) grafico3D.innerHTML = "";
-                });
+            // Botones de limpieza
+            const limpiarRelativosBtnX = document.getElementById("limpiar-relativo-x");
+            if (limpiarRelativosBtnX) {
+                limpiarRelativosBtnX.addEventListener("click", limpiarRelativo1Var);
             }
 
-            // Botón Limpiar Absolutos
-            const limpiarAbsolutosBtn = document.getElementById("limpiarAbsolutosBtn");
-            if (limpiarAbsolutosBtn) {
-                limpiarAbsolutosBtn.addEventListener("click", function () {
-                    ["fxy", "gxy", "fxyz", "g1xyz", "g2xyz"].forEach(id => {
-                        const input = document.getElementById(id);
-                        if (input) input.value = "";
-                    });
-                    const resultadosDiv = document.getElementById("resultados-lagrange");
-                    if (resultadosDiv) resultadosDiv.innerHTML = "";
-                    if (grafico) {
-                        const ctx = grafico.getContext("2d");
-                        ctx.clearRect(0, 0, grafico.width, grafico.height);
-                    }
-                });
+            const limpiarRelativosBtnXY = document.getElementById("limpiar-relativo-xy");
+            if (limpiarRelativosBtnXY) {
+                limpiarRelativosBtnXY.addEventListener("click", limpiarRelativo2Var);
             }
 
-            // 🔄 Checkbox y campos para análisis absoluto
+            const limpiarBtn2v = document.getElementById("limpiar-absoluto-2v");
+            if (limpiarBtn2v) {
+                limpiarBtn2v.addEventListener("click", limpiarAbsoluto2Var);
+            }
+
+            const limpiarBtn3v = document.getElementById("limpiar-absoluto-3v");
+            if (limpiarBtn3v) {
+                limpiarBtn3v.addEventListener("click", limpiarAbsoluto3Var);
+            }
+
+            // Checkbox y campos para análisis absoluto
             const checkboxAbs = document.getElementById('modoAbs2vars');
             const toggleAbs = checkboxAbs?.parentElement;
             const btnTextAbs = toggleAbs?.querySelector('.btn-text');
@@ -105,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateAbsToggle();
             }
 
-            // ✅ Escucha de análisis Absolutos según modo
+            // Escucha de análisis Absolutos según modo
             const formLagrange = document.getElementById("form-lagrange");
             if (formLagrange) {
                 formLagrange.addEventListener("submit", function (e) {
@@ -119,7 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
 
-            // ✅ Toggle visual en relativos (2 forms)
+            // Toggle visual en relativos (2 forms)
             const checkboxRel = document.getElementById('modoRel2vars');
             const toggleRel = checkboxRel?.parentElement;
             const btnTextRel = toggleRel?.querySelector('.btn-text');
@@ -150,32 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateRelToggle();
             }
 
-            // ✅ Botones de limpieza Relativos por modo
-            const limpiarRelativosBtnX = document.getElementById("limpiarRelativosBtnX");
-            if (limpiarRelativosBtnX) {
-                limpiarRelativosBtnX.addEventListener("click", function () {
-                    document.getElementById("funcion-input-x").value = "";
-                    const resultadosDiv = document.getElementById("resultados");
-                    if (resultadosDiv) resultadosDiv.innerHTML = "";
-                    if (grafico) {
-                        grafico.destroy();
-                        grafico = null;
-                    }
-                });
-            }
-
-            const limpiarRelativosBtnXY = document.getElementById("limpiarRelativosBtnXY");
-            if (limpiarRelativosBtnXY) {
-                limpiarRelativosBtnXY.addEventListener("click", function () {
-                    document.getElementById("funcion-input-xy").value = "";
-                    const resultadosDiv = document.getElementById("resultados");
-                    if (resultadosDiv) resultadosDiv.innerHTML = "";
-                    const grafico3D = document.querySelector("#grafico-3d");
-                    if (grafico3D) grafico3D.innerHTML = "";
-                });
-            }
-
-            // ✅ Botón de análisis Relativos funcional por modo
+            // Botón de análisis Relativos funcional por modo
             const btnAnalizar = document.getElementById("analizarBtn");
             if (btnAnalizar) {
                 btnAnalizar.addEventListener("click", function () {
@@ -669,10 +680,6 @@ function analizarAbsolutos3Vars2Restricciones() {
     const gStr = document.getElementById("gxyz").value.trim();
     const hStr = document.getElementById("hxyz").value.trim();
     const resultadosDiv = document.getElementById("texto-resultados");
-    if (!resultadosDiv) {
-        console.warn("No se encontró el contenedor #texto-resultados");
-        return;
-    }
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
     try {

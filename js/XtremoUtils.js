@@ -45,34 +45,6 @@ export function personalizarHeader() {
     }
 }
 
-export function limpiarRelativos() {
-    document.getElementById("input-funcion").value = "";
-    document.getElementById("input-punto-x").value = "";
-    document.getElementById("input-punto-y").value = "";
-
-    const resultadosDiv = document.getElementById("texto-resultados");
-    resultadosDiv.innerHTML = "";
-
-    if (grafico) {
-        grafico.destroy();
-        grafico = null;
-    }
-}
-
-export function limpiarAbsolutos() {
-    document.getElementById("input-funcion-abs").value = "";
-    document.getElementById("input-restriccion-1").value = "";
-    document.getElementById("input-restriccion-2").value = "";
-
-    const resultadosDiv = document.getElementById("texto-resultados");
-    resultadosDiv.innerHTML = "";
-
-    if (grafico) {
-        grafico.destroy();
-        grafico = null;
-    }
-}
-
 export function clasificarPunto(fxx, fyy, fxy, x, y) {
     const d = fxx.evaluate({ x, y }) * fyy.evaluate({ x, y }) - Math.pow(fxy.evaluate({ x, y }), 2);
     const fxxVal = fxx.evaluate({ x, y });
@@ -101,7 +73,6 @@ export function clasificarPunto(fxx, fyy, fxy, x, y) {
 
     return { tipo, clasificacion, d, fxxVal };
 }
-
 
 export function formatearNumero(num) {
     return Number.isInteger(num) ? num.toString() : num.toFixed(4);
