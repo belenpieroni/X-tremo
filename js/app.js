@@ -18,12 +18,21 @@ function limpiarRelativo1Var() {
 }
 
 function limpiarRelativo2Var() {
-    const input = document.getElementById("funcion-input-xy");
-    if (input) input.value = "";
+    const inputXY = document.getElementById("funcion-input-xy");
+    if (inputXY) inputXY.value = "";
+
     const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
+
     const grafico3D = document.getElementById("grafico-3d");
-    if (grafico3D) grafico3D.innerHTML = "";
+    if (grafico3D) {
+        try {
+            Plotly.purge(grafico3D);  // Elimina cualquier gráfico activo
+        } catch (err) {
+            console.warn("No se pudo purgar el gráfico 3D:", err);
+        }
+        grafico3D.innerHTML = "";  // Refuerzo por si queda algo
+    }
 }
 
 function limpiarAbsoluto2Var() {
@@ -124,6 +133,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         form2vars.querySelectorAll("input").forEach(input => input.disabled = true);
                         form3vars.querySelectorAll("input").forEach(input => input.disabled = false);
 
+                        limpiarAbsoluto3Var();  // <-- Limpiar formulario 3 vars aquí
+
                     } else {
                         // Modo 2 variables
                         btnTextAbs.textContent = '2 variables';
@@ -134,6 +145,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         // Habilitar inputs de 2 vars, deshabilitar de 3 vars
                         form2vars.querySelectorAll("input").forEach(input => input.disabled = false);
                         form3vars.querySelectorAll("input").forEach(input => input.disabled = true);
+
+                        limpiarAbsoluto2Var();  // <-- Limpiar formulario 2 vars aquí
                     }
                 };
 
@@ -165,6 +178,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (checkboxRel && toggleRel && btnTextRel && formXRel && formXYRel) {
                 const updateRelToggle = () => {
                     const graficoFuncion = document.getElementById("grafico-funcion");
+                    const grafico3D = document.getElementById("grafico-3d");  // <- nuevo
+
                     if (checkboxRel.checked) {
                         // Modo 2 variables
                         btnTextRel.textContent = '2 variables';
@@ -172,6 +187,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         formXRel.style.display = 'none';
                         formXYRel.style.display = 'block';
                         if (graficoFuncion) graficoFuncion.style.display = 'none';
+
+                        limpiarRelativo2Var();  // Limpiamos formulario 2 variables
                     } else {
                         // Modo 1 variable
                         btnTextRel.textContent = '1 variable';
@@ -179,6 +196,18 @@ document.addEventListener("DOMContentLoaded", function () {
                         formXRel.style.display = 'block';
                         formXYRel.style.display = 'none';
                         if (graficoFuncion) graficoFuncion.style.display = 'block';
+
+                        limpiarRelativo1Var();  // Limpiamos formulario 1 variable
+                    }
+
+                    // Limpieza común: gráfico 3D
+                    if (grafico3D) {
+                        try {
+                            Plotly.purge(grafico3D);  // Evita que se acumulen trazas
+                        } catch (e) {
+                            console.warn("No se pudo purgar el gráfico 3D:", e);
+                        }
+                        grafico3D.innerHTML = "";
                     }
                 };
 
