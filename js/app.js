@@ -27,11 +27,11 @@ function limpiarRelativo2Var() {
     const grafico3D = document.getElementById("grafico-3d");
     if (grafico3D) {
         try {
-            Plotly.purge(grafico3D);  // Elimina cualquier gráfico activo
+            Plotly.purge(grafico3D);  
         } catch (err) {
             console.warn("No se pudo purgar el gráfico 3D:", err);
         }
-        grafico3D.innerHTML = "";  // Refuerzo por si queda algo
+        grafico3D.innerHTML = "";  
     }
 }
 
@@ -40,25 +40,34 @@ function limpiarAbsoluto2Var() {
         const input = document.getElementById(id);
         if (input) input.value = "";
     });
-    const resultados = document.getElementById("resultados-lagrange");
+    const resultados = document.getElementById("texto-resultados");
     if (resultados) resultados.innerHTML = "";
-    if (grafico) {
-        const ctx = grafico.getContext("2d");
-        ctx.clearRect(0, 0, grafico.width, grafico.height);
+    const grafico3D = document.getElementById("grafico-3d");
+    if (grafico3D) {
+        try {
+            Plotly.purge(grafico3D);  
+        } catch (err) {
+            console.warn("No se pudo purgar el gráfico 3D:", err);
+        }
+        grafico3D.innerHTML = "";  
     }
 }
 
 function limpiarAbsoluto3Var() {
     ["fxyz", "gxyz", "hxyz"].forEach(id => {
         const input = document.getElementById(id);
-        console.log(`Limpiando ${id}`, input); // Agregá esto para debug
         if (input) input.value = "";
     });
-    const resultados = document.getElementById("resultados-lagrange");
+    const resultados = document.getElementById("texto-resultados");
     if (resultados) resultados.innerHTML = "";
-    if (grafico) {
-        const ctx = grafico.getContext("2d");
-        ctx.clearRect(0, 0, grafico.width, grafico.height);
+    const grafico3D = document.getElementById("grafico-3d");
+    if (grafico3D) {
+        try {
+            Plotly.purge(grafico3D);  
+        } catch (err) {
+            console.warn("No se pudo purgar el gráfico 3D:", err);
+        }
+        grafico3D.innerHTML = "";  
     }
 }
 

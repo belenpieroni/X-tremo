@@ -1,6 +1,4 @@
 // XtremoUtils.js
-let grafico = null;
-
 export function personalizarHeader() {
     const contenedor = document.getElementById("header-dinamico");
     if (!contenedor) return;
@@ -247,7 +245,5 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
     if (traceRestriccion && traceRestriccion.x.length > 0) {
         trazas.push(traceRestriccion);
     }
-
-
     Plotly.newPlot(graficoDiv, trazas, layout);
 }
