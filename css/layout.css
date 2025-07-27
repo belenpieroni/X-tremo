@@ -1,15 +1,5 @@
 /* layout.css */
 
-/* Distribución general de la página */
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
-  background-color: var(--fondo-base);
-  color: var(--gris-oscuro);
-}
-
 /* Header */
 #header {
   width: 100%;
@@ -21,6 +11,11 @@ body {
   align-items: center;
   box-shadow: 0 4px 12px var(--gris-oscuro);
   border-bottom: 1px solid black;
+}
+
+#header .logo-ref {
+  color: var(--fondo-base);
+  font-size: 30px;
 }
 
 #header .logo {
@@ -164,12 +159,66 @@ body {
   width: 100%;
 }
 
-main {
-  flex: 1;
-  padding: 40px;
-  background-color: var(--fondo-base);
-}
+/* Sidebar responsive integrado con botón interno */
+@media (max-width: 768px) {
+  .principal-container {
+    flex-direction: row;
+    position: relative;
+  }
 
-html {
-    overflow-y: overlay;
+  main {
+    transition: margin-left 0.3s ease;
+    padding: 20px;
+  }
+
+  #sidebar-nav button {
+    padding: 14px 20px;
+    font-size: 13px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar.open ~ main {
+    margin-left: 40%; /* ajustado al ancho expandido */
+  }
+
+  .sidebar {
+    position: relative;
+    width: 60px;
+    transition: width 0.3s ease;
+    overflow: hidden;
+  }
+
+  .sidebar.open {
+    width: 40%; /* ancho completo cuando se abre */
+  }
+
+  .menu-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 12px;
+    gap: 8px;
+    width: 100%;
+    color: white;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+
+  /* Solo mostrar el ícono en sidebar cerrado */
+  .sidebar:not(.open) .menu-toggle span {
+    display: none;
+  }
+
+  /* Ocultar el nav si está cerrado */
+  .sidebar:not(.open) #sidebar-nav {
+    display: none;
+  }
+
+  .sidebar.open ~ main {
+    margin-left: 0%;
+  }
 }

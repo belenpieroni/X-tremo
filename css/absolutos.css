@@ -138,3 +138,29 @@ code {
 .toggle-btn input[type="checkbox"]:checked + .btn-text {
   font-weight: 700;
 }
+
+@media (max-width: 768px) {
+  .absolutos-bloque {
+    margin-top: 30px;
+    padding: 12px;
+  }
+
+  .absolutos-bloque h3 {
+    font-size: 1rem;
+  }
+
+  #contenido-principal input,
+  #contenido-principal textarea {
+    font-size: 15px;
+    padding: 6px 10px;
+  }
+
+  #grafico-3d {
+    height: 360px;
+  }
+
+  .toggle-btn {
+    font-size: 0.9rem;
+    padding: 8px 12px;
+  }
+}

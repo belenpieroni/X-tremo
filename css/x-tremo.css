@@ -25,6 +25,17 @@ body {
   background-color: var(--fondo-base);
 }
 
+main {
+  flex: 1;
+  padding: 40px;
+  background-color: var(--fondo-base);
+  min-height: 1600px;
+}
+
+html {
+    overflow-y: overlay;
+}
+
 h1, h2, h3, h4 {
   font-weight: 600;
 }
