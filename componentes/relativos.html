@@ -2,7 +2,7 @@
 <section class="modulo-relativos">
   <h2>Análisis de Extremos Relativos</h2>
   <p>Ingresa una función para analizar sus extremos relativos:</p>
-  
+
   <!-- Toggle visual -->
   <label class="toggle-btn" for="modoRel2vars">
     <input type="checkbox" id="modoRel2vars" />
@@ -12,9 +12,9 @@
   <form id="form-funcion">
     <!-- Bloque para 1 variable -->
     <div id="form-funcionx">
-      <label for="funcion-input-x">Función: f(x):</label>
+      <label for="funcionx">Función: f(x):</label>
       <div class="input-con-limpiar">
-        <input type="text" id="funcion-input-x" placeholder="Ej: x^3 - 3*x + 2" required />
+        <math-field id="funcionx" virtual-keyboard-mode="auto">x^3 - 3x + 2</math-field>
         <button id="limpiar-relativo-x" type="button" class="btn-limpiar" title="Limpiar">
           <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
         </button>
@@ -23,9 +23,9 @@
 
     <!-- Bloque para 2 variables -->
     <div id="form-funcionxy" style="display: none;">
-      <label for="funcion-input-xy">Función: f(x, y):</label>
+      <label for="funcionxy">Función: f(x, y):</label>
       <div class="input-con-limpiar">
-        <input type="text" id="funcion-input-xy" placeholder="Ej: x^3 - 3*x*y + y^3" required />
+        <math-field id="funcionxy" virtual-keyboard-mode="auto">x^3 - 3xy + y^3</math-field>
         <button id="limpiar-relativo-xy" type="button" class="btn-limpiar" title="Limpiar">
           <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
         </button>
@@ -34,6 +34,7 @@
 
     <button id="analizarBtn" class="btn" type="button">Analizar</button>
   </form>
+
   <canvas id="grafico-funcion"></canvas>
   <div id="grafico-3d"></div>
   <div id="resultados" class="resultados"></div>

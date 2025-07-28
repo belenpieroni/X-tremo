@@ -3,14 +3,17 @@ import {
     personalizarHeader,
     formatearNumero,
     graficar2Var, 
+    sanitizarFuncion,
     encontrarCeros
 } from './XtremoUtils.js';
 
 function limpiarRelativo1Var() {
-    const input = document.getElementById("funcion-input-x");
-    if (input) input.value = "";
+    const campo = document.getElementById("funcionx");
+    if (campo) campo.setValue("");
+
     const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
+
     if (grafico) {
         grafico.destroy();
         grafico = null;
@@ -18,8 +21,8 @@ function limpiarRelativo1Var() {
 }
 
 function limpiarRelativo2Var() {
-    const inputXY = document.getElementById("funcion-input-xy");
-    if (inputXY) inputXY.value = "";
+    const campoXY = document.getElementById("funcionxy");
+    if (campoXY) campoXY.setValue("");
 
     const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
@@ -27,11 +30,11 @@ function limpiarRelativo2Var() {
     const grafico3D = document.getElementById("grafico-3d");
     if (grafico3D) {
         try {
-            Plotly.purge(grafico3D);  
+        Plotly.purge(grafico3D);
         } catch (err) {
-            console.warn("No se pudo purgar el gráfico 3D:", err);
+        console.warn("No se pudo purgar el gráfico 3D:", err);
         }
-        grafico3D.innerHTML = "";  
+        grafico3D.innerHTML = "";
     }
 }
 
@@ -270,9 +273,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 1 VARIABLE*/
 function analizarRelativos1Var() {
-    const funcionStr = document.getElementById("funcion-input-x").value;
+    const mathField = document.getElementById("funcionx");
+    const funcionStr = mathField?.getValue()?.trim() ?? "";
+
     const resultadosDiv = document.getElementById("resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
+
+    if (!funcionStr) {
+        resultadosDiv.innerHTML = "<p>⚠️ No se ingresó ninguna función</p>";
+        return;
+    }
 
     try {
         const expr = math.parse(funcionStr);
@@ -463,9 +473,22 @@ function graficarFuncion(f, label, puntosCriticos = []) {
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 2 VARIABLES */
 function analizarRelativos2Var() {
-    const funcionStr = document.getElementById("funcion-input-xy").value;
+    const mathField = document.getElementById("funcionxy");
+    const funcionRaw = mathField?.getValue()?.trim() ?? "";
+    const funcionStr = sanitizarFuncion(funcionRaw);
     const resultadosDiv = document.getElementById("resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
+
+    if (!funcionStr) {
+        resultadosDiv.innerHTML = "<p>⚠️ No se ingresó ninguna función</p>";
+        return;
+    }
+
+    // Si contiene un '=', asumimos formato tipo 'f(x,y) = expresión'
+    if (funcionStr.includes('=')) {
+        const partes = funcionStr.split('=');
+        funcionStr = partes[1]?.trim();
+    }
 
     try {
         const fExpr = math.parse(funcionStr);
@@ -587,14 +610,25 @@ function analizarRelativos2Var() {
 
 /* CÁLCULO EXTREMOS ABSOLUTOS */
 function analizarAbsolutos2Vars1Restriccion() {
-    const fStrRaw = document.getElementById("fxy").value.trim().replace("=0", "");
-    const gStrRaw = document.getElementById("gxy").value.trim().replace("=0", "");
+    const fStrRaw = document.getElementById("fxy").getValue().trim().replace("=0", "");
+    const gStrRaw = document.getElementById("gxy").getValue().trim().replace("=0", "");
+    const fStr = sanitizarFuncion(fStrRaw);
+    const gStr = sanitizarFuncion(gStrRaw);
     const resultadosTextDiv = document.getElementById("texto-resultados");
     resultadosTextDiv.innerHTML = "<p>Calculando...</p>";
+    
+    if (!fStr) {
+        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna función.</p>"
+        return;
+    }
+    if (!gStr) {
+        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna restricción.</p>"
+        return;
+    }
 
     try {
-        const fExpr = math.parse(fStrRaw);
-        const gExpr = math.parse(gStrRaw);
+        const fExpr = math.parse(fStr);
+        const gExpr = math.parse(gStr);
 
         const fxExpr = math.derivative(fExpr, 'x');
         const fyExpr = math.derivative(fExpr, 'y');
@@ -639,8 +673,8 @@ function analizarAbsolutos2Vars1Restriccion() {
         let html = `
             <div class="absolutos-bloque">
                 <h3>Funciones</h3>
-                <p><strong>Función: f(x,y):</strong> <code>${fStrRaw}</code></p>
-                <p><strong>Restricción: g(x,y):</strong> <code>${gStrRaw} = 0</code></p>
+                <p><strong>Función: f(x,y):</strong> <code>${fStr}</code></p>
+                <p><strong>Restricción: g(x,y):</strong> <code>${gStr} = 0</code></p>
             </div>
 
             <div class="absolutos-bloque">
@@ -714,11 +748,24 @@ function analizarAbsolutos2Vars1Restriccion() {
 }
 
 function analizarAbsolutos3Vars2Restricciones() {
-    const fStr = document.getElementById("fxyz").value.trim();
-    const gStr = document.getElementById("gxyz").value.trim();
-    const hStr = document.getElementById("hxyz").value.trim();
+    const fStr = document.getElementById("fxyz").getValue().trim();
+    const gStr = document.getElementById("gxyz").getValue().trim();
+    const hStr = document.getElementById("hxyz").getValue().trim();
     const resultadosDiv = document.getElementById("texto-resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
+
+    if (!fStr) {
+        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna función.</p>"
+        return;
+    }
+    if (!gStr) {
+        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó la primera restricción.</p>"
+        return;
+    }
+    if (!hStr) {
+        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó la segunda restricción.</p>"
+        return;
+    }
 
     try {
         const fExpr = math.parse(fStr);

@@ -45,17 +45,19 @@ h1, h2, h3, h4 {
 
 /* Inputs */
 #contenido-principal input, 
-#contenido-principal textarea {
+#contenido-principal textarea,
+#contenido-principal math-field {
   border: 1px solid var(--profundo);
   border-radius: 5px;
   padding: 8px 12px;
-  font-size: 16px;
-  width: 100%;
+  font-size: 20px;
+  width: 90%;
   margin-bottom: 15px;
 }
 
 #contenido-principal input:focus, 
-#contenido-principal textarea:focus {
+#contenido-principal textarea:focus,
+#contenido-principal math-field:focus {
   outline: none;
   border-color: var(--relativo-primario);
 }
@@ -190,8 +192,9 @@ canvas#grafico-funcion:empty {
   }
 
   #contenido-principal input,
-  #contenido-principal textarea {
-    font-size: 15px;
+  #contenido-principal textarea,
+  #contenido-principal math-field {
+    font-size: 19px;
     padding: 6px 10px;
   }
 

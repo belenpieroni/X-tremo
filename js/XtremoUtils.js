@@ -108,6 +108,19 @@ export function encontrarCeros(f1) {
     return ceros;
 }
 
+export function sanitizarFuncion(str) {
+  // Si tiene '=', cortar
+  if (str.includes('=')) {
+    str = str.split('=')[1]?.trim() ?? str;
+  }
+
+  // Reemplazar multiplicación implícita entre letras por explícita
+  // ej: x y → x*y, xy → x*y
+  str = str.replace(/([a-zA-Z])\s*([a-zA-Z])/g, '$1*$2');
+
+  return str;
+}
+
 export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = null) {
     const graficoDiv = document.getElementById("grafico-3d");
     if (!graficoDiv) {
@@ -115,8 +128,15 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
         return;
     }
 
-    const fExpr = math.parse(funcionStr);
-    const fCompiled = fExpr.compile();
+    let fCompiled;
+    try {
+        const fExpr = math.parse(funcionStr);
+        fCompiled = fExpr.compile();
+    } catch (err) {
+        graficoDiv.innerHTML = "<p style='color:red'>❌ Error al compilar la función f(x,y). Revisá sintaxis y variables.</p>";
+        console.warn("Compilación fallida:", funcionStr);
+        return;
+    }
 
     const rango = 10;
     const paso = 0.2;
@@ -130,23 +150,31 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
     for (let i = 0; i < xValues.length; i++) {
         const fila = [];
         for (let j = 0; j < yValues.length; j++) {
-            try {
-                const z = fCompiled.evaluate({ x: xValues[i], y: yValues[j] });
-                fila.push(typeof z === "number" && isFinite(z) ? z : null);
-            } catch {
-                fila.push(null);
-            }
+        try {
+            const z = fCompiled.evaluate({ x: xValues[i], y: yValues[j] });
+            fila.push(typeof z === "number" && isFinite(z) ? z : null);
+        } catch {
+            fila.push(null);
+        }
         }
         zValues.push(fila);
     }
 
+    const matrizValida = zValues.flat().some(v => Number.isFinite(v));
+    if (!matrizValida) {
+        graficoDiv.innerHTML = "<p style='color:red'>⚠️ La función ingresada no pudo ser evaluada. Verificá que solo use x e y, y que esté bien escrita.</p>";
+        console.warn("Todos los valores de Z son inválidos.");
+        return;
+    }
+
+    // Puntos críticos
     const puntosX = puntosCriticos.map(p => p.x);
     const puntosY = puntosCriticos.map(p => p.y);
     const puntosZ = puntosCriticos.map(p => {
         try {
-            return fCompiled.evaluate({ x: p.x, y: p.y });
+        return fCompiled.evaluate({ x: p.x, y: p.y });
         } catch {
-            return null;
+        return null;
         }
     });
 
@@ -189,27 +217,28 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
         name: "Puntos críticos"
     };
 
-    // Plano de restricción si se especifica
     let traceRestriccion = null;
-        if (restriccionStr) {
+    if (restriccionStr) {
         try {
-            const gExpr = math.parse(restriccionStr);
-            const gCompiled = gExpr.compile();
+        const gExpr = math.parse(restriccionStr);
+        const gCompiled = gExpr.compile();
 
-            const puntosRestriccion = [];
-            for (let x = -rango; x <= rango; x += paso) {
-            for (let y = -rango; y <= rango; y += paso) {
-                try {
+        const puntosRestriccion = [];
+        for (let x of xValues) {
+            for (let y of yValues) {
+            try {
                 const gVal = gCompiled.evaluate({ x, y });
                 if (Math.abs(gVal) < 0.05) {
-                    const zVal = fCompiled.evaluate({ x, y });
+                const zVal = fCompiled.evaluate({ x, y });
+                if (Number.isFinite(zVal)) {
                     puntosRestriccion.push({ x, y, z: zVal });
                 }
-                } catch {}
+                }
+            } catch {}
             }
-            }
+        }
 
-            traceRestriccion = {
+        traceRestriccion = {
             x: puntosRestriccion.map(p => p.x),
             y: puntosRestriccion.map(p => p.y),
             z: puntosRestriccion.map(p => p.z),
@@ -217,16 +246,16 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
             type: "scatter3d",
             name: "g(x,y)=0",
             line: {
-                color: "rgba(150,150,150,0.6)",
-                width: 4
+            color: "rgba(150,150,150,0.6)",
+            width: 4
             }
-            };
+        };
         } catch (err) {
-            console.warn("No se pudo compilar restricción:", restriccionStr);
+        console.warn("No se pudo compilar la restricción:", restriccionStr);
         }
-        }
-    const trazas = [traceSurface, tracePoints];
+    }
 
+    const trazas = [traceSurface, tracePoints];
     if (traceRestriccion && traceRestriccion.x.length > 0) {
         trazas.push(traceRestriccion);
     }
@@ -242,8 +271,5 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
         height: 500
     };
 
-    if (traceRestriccion && traceRestriccion.x.length > 0) {
-        trazas.push(traceRestriccion);
-    }
     Plotly.newPlot(graficoDiv, trazas, layout);
 }

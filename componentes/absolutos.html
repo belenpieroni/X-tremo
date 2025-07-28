@@ -14,31 +14,36 @@
     <div id="form-2vars">
       <label for="fxy">Función: f(x, y):</label>
       <div class="input-con-limpiar">
-        <input type="text" id="fxy" required placeholder="Ej: x^2-y^2"/>
+        <math-field id="fxy" virtual-keyboard-mode="auto">x^2 - y^2</math-field>
         <button id="limpiar-absoluto-2v" type="button" class="btn-limpiar" title="Limpiar">
           <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
         </button>
       </div>
-      <label for="gxy">Restricción g(x, y)=0:</label>
-      <input type="text" id="gxy" required placeholder="Ej: x-2y+6"/>
+
+      <label for="gxy">Restricción g(x, y) = 0:</label>
+      <math-field id="gxy" virtual-keyboard-mode="auto">x - 2y + 6</math-field>
     </div>
 
     <!-- Bloque para f(x,y,z) con dos restricciones -->
     <div id="form-3vars" style="display: none;">
       <label for="fxyz">Función: f(x, y, z):</label>
       <div class="input-con-limpiar">
-        <input type="text" id="fxyz" required placeholder="Ej: x*y*z"/>
+        <math-field id="fxyz" virtual-keyboard-mode="auto">x y z</math-field>
         <button id="limpiar-absoluto-3v" type="button" class="btn-limpiar" title="Limpiar">
           <img src="imagenes/basura.png" alt="Limpiar" width="20" height="20">
         </button>
       </div>
+
       <label for="gxyz">Restricción 1: g(x, y, z):</label>
-      <input type="text" id="gxyz" required placeholder="Ej: x+y+z-32"/>
+      <math-field id="gxyz" virtual-keyboard-mode="auto">x + y + z - 32</math-field>
+
       <label for="hxyz">Restricción 2: h(x, y, z):</label>
-      <input type="text" id="hxyz" required placeholder="Ej: x-y+z"/>
+      <math-field id="hxyz" virtual-keyboard-mode="auto">x - y + z</math-field>
     </div>
+
     <button type="submit" class="btn">Analizar</button>
   </form>
+
   <div id="texto-resultados"></div>
   <div id="grafico-3d"></div>
 </section>
