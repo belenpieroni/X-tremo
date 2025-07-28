@@ -748,9 +748,12 @@ function analizarAbsolutos2Vars1Restriccion() {
 }
 
 function analizarAbsolutos3Vars2Restricciones() {
-    const fStr = document.getElementById("fxyz").getValue().trim();
-    const gStr = document.getElementById("gxyz").getValue().trim();
-    const hStr = document.getElementById("hxyz").getValue().trim();
+    const fRaw = document.getElementById("fxyz").getValue()?.trim() ?? "";
+    const gRaw = document.getElementById("gxyz").getValue()?.trim() ?? "";
+    const hRaw = document.getElementById("hxyz").getValue()?.trim() ?? "";
+    const fStr = sanitizarFuncion(fRaw);
+    const gStr = sanitizarFuncion(gRaw);
+    const hStr = sanitizarFuncion(hRaw);
     const resultadosDiv = document.getElementById("texto-resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
