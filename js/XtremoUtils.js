@@ -109,25 +109,22 @@ export function encontrarCeros(f1) {
 }
 
 export function sanitizarFuncion(str) {
-  // Eliminar el lado izquierdo si hay una igualdad
   if (str.includes('=')) {
     str = str.split('=')[1]?.trim() ?? str;
   }
 
-  // Reemplazo de funciones matemáticas escritas en español
   str = str.replace(/\b(sen)\b/g, 'sin');
   str = str.replace(/\b(tg)\b/g, 'tan');
 
-  // Multiplicación implícita entre letras con o sin espacio (xy → x*y, x y → x*y)
-  str = str.replace(/([a-zA-Z])\s*([a-zA-Z])/g, '$1*$2');
-
-  // Multiplicación implícita entre variable y paréntesis (x(y+z) → x*(y+z))
-  str = str.replace(/([a-zA-Z])\s*(\()/g, '$1*$2');
-
-  // Multiplicación implícita entre letras encadenadas tipo yz, xz, xyz → x*y*z
+  // Solo combinaciones entre x, y, z
+  str = str.replace(/\b([x|y|z])\s*([x|y|z])\b/g, '$1*$2');
   str = str.replace(/\b([xyz]{2,3})\b/g, match => match.split('').join('*'));
+  str = str.replace(/([x|y|z])\s*(\()/g, '$1*$2');
 
-  // Validación final con math.js
+  // Limpieza de caracteres no válidos
+  str = str.replace(/[^\w+\-*/^().]/g, '');
+
+  // Validación con math.js
   try {
     math.parse(str);
   } catch (error) {
