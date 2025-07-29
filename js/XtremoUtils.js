@@ -134,6 +134,80 @@ export function sanitizarFuncion(str) {
   return str;
 }
 
+export function graficarFuncion(f, label, puntosCriticos = []) {
+  const divGrafico = document.getElementById("grafico-funcion");
+  if (!divGrafico) {
+    console.warn("No se encontró el contenedor de gráfico.");
+    return;
+  }
+
+  divGrafico.classList.add("activo");
+
+  const xs = [];
+  const ys = [];
+
+  for (let x = -10; x <= 10; x += 0.1) {
+    xs.push(x);
+    try {
+      const y = f.evaluate({ x });
+      ys.push(Number.isFinite(y) ? y : null);
+    } catch {
+      ys.push(null);
+    }
+  }
+
+  const traceFuncion = {
+    x: xs,
+    y: ys,
+    mode: "lines",
+    type: "scatter",
+    name: label || "f(x)",
+    line: {
+      color: "#d85e00",
+      width: 2
+    }
+  };
+
+  const traceCriticos = puntosCriticos.length > 0 ? {
+    x: puntosCriticos.map(p => p.x),
+    y: puntosCriticos.map(p => p.y),
+    mode: "markers+text",
+    type: "scatter",
+    name: "Puntos críticos",
+    marker: {
+      size: 8,
+      color: puntosCriticos.map(p =>
+        p.tipo === "mínimo" ? "#15b7c0" :
+        p.tipo === "máximo" ? "#d85e00" :
+        "#777777"
+      ),
+      line: {
+        width: 1,
+        color: "#333"
+      }
+    },
+    text: puntosCriticos.map(p =>
+      `${p.tipo} en (${formatearNumero(p.x)}, ${formatearNumero(p.y)})`
+    ),
+    textposition: "top center"
+  } : null;
+
+  const layout = {
+    title: label || "Gráfico de f(x)",
+    xaxis: { title: "x" },
+    yaxis: { title: "f(x)" },
+    margin: { t: 50, b: 50, l: 60, r: 30 },
+    plot_bgcolor: "rgba(0,0,0,0)",
+    paper_bgcolor: "rgba(0,0,0,0)",
+    font: { family: "Poppins, sans-serif" },
+    responsive: true
+  };
+
+  const trazas = traceCriticos ? [traceFuncion, traceCriticos] : [traceFuncion];
+
+  Plotly.newPlot(divGrafico, trazas, layout, { responsive: true });
+}
+
 export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = null) {
     const graficoDiv = document.getElementById("grafico-3d");
     if (!graficoDiv) {

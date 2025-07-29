@@ -149,6 +149,20 @@
         <p>Pieroni, María Belén.</p>
     </div>
   </footer>
+  <button class="btn-scroll-up" id="btnScrollUp" aria-label="Ir arriba">↑</button>
+  <script>const scrollUpBtn = document.getElementById("btnScrollUp");
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 300) {
+        scrollUpBtn.classList.add("show");
+      } else {
+        scrollUpBtn.classList.remove("show");
+      }
+    });
+
+    scrollUpBtn.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  </script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

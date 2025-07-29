@@ -4,6 +4,7 @@ import {
     formatearNumero,
     graficar2Var, 
     sanitizarFuncion,
+    graficarFuncion,
     encontrarCeros
 } from './XtremoUtils.js';
 
@@ -43,7 +44,7 @@ function limpiarAbsoluto2Var() {
         const input = document.getElementById(id);
         if (input) input.value = "";
     });
-    const resultados = document.getElementById("texto-resultados");
+    const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
     const grafico3D = document.getElementById("grafico-3d");
     if (grafico3D) {
@@ -56,12 +57,14 @@ function limpiarAbsoluto2Var() {
     }
 }
 
+let grafico
+
 function limpiarAbsoluto3Var() {
     ["fxyz", "gxyz", "hxyz"].forEach(id => {
         const input = document.getElementById(id);
         if (input) input.value = "";
     });
-    const resultados = document.getElementById("texto-resultados");
+    const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
     const grafico3D = document.getElementById("grafico-3d");
     if (grafico3D) {
@@ -104,6 +107,11 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
             contenido.innerHTML = data;
             window.scrollTo({ top: 0, behavior: "smooth" });
+            // Asignar el listener al botón de exportar PDF (si existe)
+            const btnExportarPDF = document.getElementById("btnExportarPDF");
+            if (btnExportarPDF) {
+                btnExportarPDF.addEventListener("click", exportarPDF);
+            }
             // Botones de limpieza
             const limpiarRelativosBtnX = document.getElementById("limpiar-relativo-x");
             if (limpiarRelativosBtnX) {
@@ -269,6 +277,76 @@ document.addEventListener("DOMContentLoaded", function () {
             sidebar.classList.toggle("open");
         });
     }
+    
+    // Función para exportar resultados en PDF
+    async function exportarPDF() {
+        const btnExportarPDF = document.getElementById("btnExportarPDF");
+        const contenedorTexto = document.getElementById("resultados");
+
+        // Detección de módulo activo
+        const moduloRelativo = document.querySelector(".modulo-relativos");
+        const moduloAbsoluto = document.querySelector(".modulo-absolutos");
+
+        const graficoRel = document.getElementById("grafico-funcion");
+        const graficoAbs = document.getElementById("grafico-3d");
+
+        const divGrafico =
+            (moduloRelativo?.offsetParent !== null && graficoRel) ? graficoRel :
+            (moduloAbsoluto?.offsetParent !== null && graficoAbs) ? graficoAbs :
+            null;
+
+        let tituloPDF = "grafico.pdf";
+        if (divGrafico === graficoRel) tituloPDF = "extremos-relativos.pdf";
+        if (divGrafico === graficoAbs) tituloPDF = "extremos-absolutos.pdf";
+
+        if (!contenedorTexto) {
+            alert("No se encontró el contenido para exportar.");
+            return;
+        }
+
+        try {
+            btnExportarPDF.textContent = "Exportando...";
+            btnExportarPDF.disabled = true;
+
+            // Captura de texto (resultados)
+            const canvasTexto = await html2canvas(contenedorTexto, { scale: 2 });
+            const imgTexto = canvasTexto.toDataURL("image/png");
+
+            // Captura de gráfico (si existe)
+            let imgGrafico = null;
+            if (divGrafico && divGrafico.offsetWidth > 0 && divGrafico.offsetHeight > 0) {
+            divGrafico.scrollIntoView({ behavior: "instant", block: "center" });
+            divGrafico.style.visibility = "visible";
+            await new Promise(r => setTimeout(r, 500));
+            const canvasGrafico = await html2canvas(divGrafico, { scale: 2 });
+            imgGrafico = canvasGrafico.toDataURL("image/png");
+            }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            // Página 1: resultados
+            pdf.addImage(imgTexto, "PNG", 10, 20, 190, 0);
+            pdf.setFontSize(16);
+            pdf.text(tituloPDF.replace(".pdf", "").replace("extremos-", "Extremos "), 10, 10);
+
+            // Página 2: gráfico (si existe)
+            if (imgGrafico) {
+            pdf.addPage();
+            pdf.addImage(imgGrafico, "PNG", 10, 10, 190, 0);
+            }
+
+            pdf.save(tituloPDF);
+
+        } catch (err) {
+            console.error("Error al generar el PDF:", err);
+            alert("Hubo un error al generar el PDF.");
+        } finally {
+            btnExportarPDF.textContent = "📄 Descargar análisis";
+            btnExportarPDF.disabled = false;
+        }
+    }
+
 });
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 1 VARIABLE*/
@@ -366,109 +444,6 @@ function analizarRelativos1Var() {
         console.error(error);
         resultadosDiv.innerHTML = "<p>Error al analizar la función. Verifica la expresión ingresada.</p>";
     }
-}
-
-/* Realizar gráfico */
-let grafico;
-function graficarFuncion(f, label, puntosCriticos = []) {
-    const canvas = document.getElementById("grafico-funcion");
-    canvas.classList.add("activo");
-    const ctx = canvas.getContext("2d");
-
-    const xs = [];
-    const ys = [];
-
-    for (let x = -10; x <= 10; x += 0.1) {
-        xs.push(x);
-        try {
-            const y = f.evaluate({ x });
-            ys.push(typeof y === 'number' && isFinite(y) ? y : NaN);
-        } catch {
-            ys.push(NaN);
-        }
-    }
-    const puntosDataset = puntosCriticos.map((p, idx) => ({
-        x: p.x,
-        y: p.y,
-        tipo: p.tipo,
-        etiqueta: `${p.tipo} en (${formatearNumero(p.x)}, ${formatearNumero(p.y)})`
-    }));
-
-    if (grafico) grafico.destroy();
-
-    grafico = new Chart(ctx, {
-        type: 'scatter',
-        data: {
-            datasets: [
-                {
-                    label: label,
-                    type: 'line',
-                    data: xs.map((x, i) => ({ x, y: ys[i] })),
-                    borderColor: "#d85e00",
-                    backgroundColor: "rgba(216,94,0,0.1)",
-                    pointRadius: 0,
-                    borderWidth: 2,
-                    spanGaps: true,
-                    showLine: true
-                },
-                {
-                    label: "Puntos críticos",
-                    data: puntosDataset,
-                    pointRadius: 6,
-                    backgroundColor: puntosDataset.map(p =>
-                        p.tipo === "mínimo" ? "#15b7c0" :
-                        p.tipo === "máximo" ? "#d85e00" :
-                        "#777777"
-                    ),
-                    borderColor: puntosDataset.map(p =>
-                        p.tipo === "mínimo" ? "#15b7c0" :
-                        p.tipo === "máximo" ? "#d85e00" :
-                        "#777777"
-                    ),
-                    borderWidth: 1,
-                    showLine: false
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: function (context) {
-                            if (context.dataset.label === "Puntos críticos") {
-                                const punto = context.raw;
-                                return punto.etiqueta;
-                            } else {
-                                return `f(${formatearNumero(context.parsed.x)}) = ${formatearNumero(context.parsed.y)}`;
-                            }
-                        }
-                    }
-                },
-                legend: {
-                    labels: {
-                        filter: function(item) {
-                            return item.text !== undefined;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: "x"
-                    }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: "f(x)"
-                    }
-                }
-            }
-        }
-    });
 }
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 2 VARIABLES */
@@ -614,7 +589,7 @@ function analizarAbsolutos2Vars1Restriccion() {
     const gStrRaw = document.getElementById("gxy").getValue().trim().replace("=0", "");
     const fStr = sanitizarFuncion(fStrRaw);
     const gStr = sanitizarFuncion(gStrRaw);
-    const resultadosTextDiv = document.getElementById("texto-resultados");
+    const resultadosTextDiv = document.getElementById("resultados");
     resultadosTextDiv.innerHTML = "<p>Calculando...</p>";
     
     if (!fStr) {
@@ -754,7 +729,7 @@ function analizarAbsolutos3Vars2Restricciones() {
     const fStr = sanitizarFuncion(fRaw);
     const gStr = sanitizarFuncion(gRaw);
     const hStr = sanitizarFuncion(hRaw);
-    const resultadosDiv = document.getElementById("texto-resultados");
+    const resultadosDiv = document.getElementById("resultados");
     resultadosDiv.innerHTML = "<p>Calculando...</p>";
 
     if (!fStr) {
