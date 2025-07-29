@@ -16,8 +16,9 @@
     <main class="teoria-conteiner">
         <section class="bloque-teorico">
             <h2>Ayuda: ¿Cómo usar la Calculadora X-tremo?</h2>
-            <p>Es importante conocer lo que estamos haciendo durante estos calculos, por eso es recomendable: </p><a href="teoria.html">Ver teoría</a>
-            <p>La Calculadora <strong>X-tremo</strong> te permite encontrar extremos relativos y absolutos de funciones multivariables de manera visual, interactiva y guiada. Según el tipo de análisis que necesites, podés elegir entre distintos modos de funcionamiento:</p>
+            <p>La calculadora <strong>X-tremo</strong> te permite explorar <em>extremos relativos y absolutos</em> de funciones multivariables de forma visual, interactiva y guiada.</p>
+            <p>Antes de usarla, es recomendable entender los conceptos clave. Para eso, podés consultar la <a href="teoria.html">teoría explicada paso a paso</a>.</p>
+            <p>Según el tipo de análisis, podés activar distintos modos:</p>
         </section>
         <section class="bloque-teorico">
             <h3>Extremos Relativos</h3>
@@ -29,6 +30,7 @@
                 <br><code>f(x, y) = x² - y²</code>
                 </li>
                 <li>Presioná <strong>Analizar</strong>. El sistema calculará derivadas, mostrará un análisis y clasificará los puntos críticos.</li>
+                <p>Este modo es ideal para funciones que no están condicionadas por restricciones externas. Si tu problema incluye condiciones, consultá el análisis absoluto con método de Lagrange.</p>
             </ol>
         </section>
         <section class="bloque-teorico">
@@ -46,14 +48,32 @@
                 <li>Presioná <strong>Analizar</strong>. Se mostrarán los gradientes, el sistema de ecuaciones y la solución hallada, incluyendo los multiplicadores de Lagrange (μ y λ).</li>
             </ol>
         </section>
-        <section class="bloque-teorico">
-            <h3>Notación permitida</h3>
-            <p>Podés escribir funciones usando operadores como:</p>
-            <ul>
-                <li><code>+</code>, <code>-</code>, <code>*</code> muy importante colocarlo siempre, <code>/</code> y <code>^</code> para potencias</li>
-                <li><code>sin(x)</code>, <code>cos(y)</code>, <code>log(z)</code>, etc.</li>
-                <li>Paréntesis siempre que sea necesario para agrupar</li>
-            </ul>
+        <section class="bloque-teorico" id="preguntas-frecuentes">
+            <h3>Preguntas frecuentes (FAQ)</h3>
+            <details>
+                <summary>¿Qué tipo de funciones puedo analizar?</summary>
+                <p>Funciones con una, dos o tres variables, como <code>x² + y²</code> o <code>x·y·z</code>. También podés usar funciones trigonométricas, logaritmos y exponentes.</p>
+            </details>
+
+            <details>
+                <summary>¿Cómo debo escribir las expresiones?</summary>
+                <p>La ausencia de signo, implica una multiplicación (ej: xy = x·y). Agrupá con paréntesis si es necesario. Ejemplo válido: <code>x*(y + z)</code>. No uses letras o símbolos desconocidos para el sistema, solo se trabaja con x, y, z.</p>
+            </details>
+
+            <details>
+                <summary>¿Qué pasa si no ingreso bien la función?</summary>
+                <p>La calculadora mostrará una alerta. Asegurate de revisar los operadores y de no dejar espacios vacíos o símbolos sin cerrar.</p>
+            </details>
+
+            <details>
+                <summary>¿Dónde se ven los resultados?</summary>
+                <p>Justo debajo del formulario principal. Ahí vas a ver el análisis teórico, pasos intermedios y los gráficos, si corresponde.</p>
+            </details>
+
+            <details>
+                <summary>¿Se pueden guardar los resultados?</summary>
+                <p>Por ahora no, pero podés copiar el análisis o hacer una captura. Pronto se podrá exportar como PDF o imagen.</p>
+            </details>
         </section>
     </main>
     <footer>
