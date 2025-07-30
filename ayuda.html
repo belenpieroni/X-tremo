@@ -21,32 +21,38 @@
             <p>Según el tipo de análisis, podés activar distintos modos:</p>
         </section>
         <section class="bloque-teorico">
+        <section class="bloque-teorico">
             <h3>Extremos Relativos</h3>
-            <p>Para analizar puntos críticos sin restricciones:</p>
+            <p>Ideal para detectar máximos, mínimos o puntos de silla sin restricciones externas.</p>
             <ol>
-                <li>Seleccioná el <strong>modo relativo</strong> desde el panel lateral.</li>
-                <li>Elegí si tu función depende de una o dos variables.</li>
-                <li>Ingresá la función en el campo correspondiente. Ejemplo:
-                <br><code>f(x, y) = x² - y²</code>
-                </li>
-                <li>Presioná <strong>Analizar</strong>. El sistema calculará derivadas, mostrará un análisis y clasificará los puntos críticos.</li>
-                <p>Este modo es ideal para funciones que no están condicionadas por restricciones externas. Si tu problema incluye condiciones, consultá el análisis absoluto con método de Lagrange.</p>
+                <li>Elegí el <strong>modo relativo</strong> en el panel lateral.</li>
+                <li>Indicá si tu función depende de una o dos variables.</li>
+                <li>Escribí la función en el campo correspondiente. Ejemplo: <code>f(x, y) = x² - y²</code></li>
+                <li>Presioná <strong>Analizar</strong> para visualizar derivadas, clasificación de puntos críticos y representaciones gráficas.</li>
             </ol>
+            <p><strong>!</strong> Si tu problema incluye restricciones, utilizá el modo absoluto con el método de Lagrange.</p>
         </section>
         <section class="bloque-teorico">
             <h3>Extremos Absolutos con Restricción</h3>
-            <p>Cuando hay una condición que debe cumplirse, se aplica el método de Lagrange:</p>
+            <p>Cuando hay condiciones que deben cumplirse, se aplica el método de los multiplicadores de Lagrange.</p>
             <ol>
-                <li>Seleccioná el <strong>modo absoluto</strong> en la interfaz.</li>
-                <li>Elegí entre funciones de dos o tres variables.</li>
-                <li>Ingresá:
+                <li>Seleccioná el <strong>modo absoluto</strong> desde la interfaz.</li>
+                <li>Elegí si trabajás con dos o tres variables.</li>
+                <li>Completá:
                 <ul>
                     <li><code>f(x, y, z)</code>: función objetivo. Ejemplo: <code>x·y·z</code></li>
-                    <li><code>g(x, y, z)</code> y <code>h(x, y, z)</code>: restricciones. Ejemplo: <code>x + y + z - 32 = 0</code>, <code>x - y + z = 0</code></li>
+                    <li><code>g(x, y, z)</code>, <code>h(x, y, z)</code>: restricciones. Ejemplo: <code>x + y + z = 32</code> se debe ingresar como <code>x + y + z - 32</code>, ya que las restricciones siempre deben estar igualadas a cero.</li>
                 </ul>
                 </li>
-                <li>Presioná <strong>Analizar</strong>. Se mostrarán los gradientes, el sistema de ecuaciones y la solución hallada, incluyendo los multiplicadores de Lagrange (μ y λ).</li>
+                <li>Al presionar <strong>Analizar</strong>, el sistema mostrará:
+                <ul>
+                    <li>Los gradientes de cada función</li>
+                    <li>El sistema de ecuaciones asociado</li>
+                    <li>Las soluciones encontradas con los multiplicadores de Lagrange: <code>μ</code>, <code>λ</code></li>
+                </ul>
+                </li>
             </ol>
+            <p><strong>!</strong> Tené en cuenta que el análisis por método de Lagrange no determina si hay máximo o mínimo: esto se evalúa observando el valor de la función objetivo en los puntos hallados.</p>
         </section>
         <section class="bloque-teorico" id="preguntas-frecuentes">
             <h3>Preguntas frecuentes (FAQ)</h3>
@@ -75,14 +81,34 @@
                 <p>Por ahora no, pero podés copiar el análisis o hacer una captura. Pronto se podrá exportar como PDF o imagen.</p>
             </details>
         </section>
+
+        <p style="font-size: 0.9em; color: #666; margin-top: 8px;">
+            📧 Si detectás algún error recurrente o querés proponer mejoras, podés escribirme a <a href="mailto:mbpieroni18@gmail.com">mbpieroni18@gmail.com</a> ¡Estoy abierta a mejorar y encantada de brindar ayuda!
+        </p>
     </main>
     <footer>
         <div class="container">
-            <p>&copy; Análisis Matemático II.</p>
-            <p>Universidad Tecnologica Nacional FRLP.</p>
-            <p>Pieroni, María Belén.</p>
+        <p>&copy; Pieroni, María Belén.</p>
+            <p>Análisis Matemático II. Universidad Tecnologica Nacional FRLP.</p>
+            <p style="font-size: 0.9em; color: #666; margin-top: 8px;">
+                Este sistema puede contener errores de cálculo o interpretación. Verificá los resultados antes de aplicarlos en contextos críticos.
+            </p>
         </div>
     </footer>
+    <button class="btn-scroll-up" id="btnScrollUp" aria-label="Ir arriba">&#8679;</button>
+    <script>const scrollUpBtn = document.getElementById("btnScrollUp");
+        window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+            scrollUpBtn.classList.add("show");
+        } else {
+            scrollUpBtn.classList.remove("show");
+        }
+        });
+
+        scrollUpBtn.addEventListener("click", () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    </script>
     <script type="module" src="js/app.js"></script>
     </body>
 </html>
