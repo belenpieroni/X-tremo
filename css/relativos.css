@@ -75,6 +75,7 @@ h1, h2, h3, h4 {
 }
 
 .resultado-bloque {
+  margin-top: 50px;
   margin-bottom: 20px;
   padding: 15px;
   background: rgba(255, 255, 255, 0.6);
@@ -126,6 +127,18 @@ code {
 }
 
 /* Gráfico */
+#grafico-container {
+  margin-top: 32px;
+  padding: 16px;
+  background-color: #fff;
+  border-radius: 8px;
+}
+
+#grafico-3d {
+  height: 400px; /* o el alto que necesite Plotly */
+  overflow: hidden;
+}
+
 #grafico-funcion {
   width: 100%;
   height: 400px;
@@ -155,30 +168,6 @@ code {
 /* Cuando el checkbox está chequeado, cambia el fondo y color */
 .toggle-btn input[type="checkbox"]:checked + .btn-text {
   font-weight: 700;
-}
-
-canvas#grafico-funcion:empty {
-  display: none;
-}
-
-#grafico-3d:empty {
-  display: none;
-}
-
-#grafico-funcion {
-  min-height: 0;
-  height: 0;
-  display: block;
-}
-
-#grafico-funcion.activo {
-  height: 400px; /* o lo que uses para tu gráfico */
-}
-
-#grafico-3d {
-  min-height: 0;
-  height: auto;
-  display: block;
 }
 
 @media (max-width: 768px) {

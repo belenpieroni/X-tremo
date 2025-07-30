@@ -492,8 +492,8 @@ function analizarRelativos2Var() {
             const puntosCriticos = [];
 
             // Escaneo de grilla
-            for (let x = -3; x <= 3; x += 0.1) {
-                for (let y = -3; y <= 3; y += 0.1) {
+            for (let x = -50; x <= 50; x += 0.1) {
+                for (let y = -50; y <= 50; y += 0.1) {
                     try {
                         const fxVal = fx.evaluate({ x, y });
                         const fyVal = fy.evaluate({ x, y });
@@ -507,21 +507,6 @@ function analizarRelativos2Var() {
                     } catch { /* ignorar errores */ }
                 }
             }
-
-            // Construcción de salida
-            let html = `
-            <div class="resultado-bloque">
-                <h3>Función</h3>
-                <p>f(x, y) = ${funcionStr}</p>
-            </div>
-
-            <div class="resultado-bloque">
-                <h3>Primeras Derivadas</h3>
-                <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
-                <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
-            </div>
-            `;
-
             if (puntosCriticos.length === 0) {
                 html += `
                 <div class="resultado-bloque">
@@ -531,49 +516,67 @@ function analizarRelativos2Var() {
                 return;
             }
 
-            html += `
+            // Construcción de salida
+            let html = `
             <div class="resultado-bloque">
+                <h3>Función</h3>
+                <p>f(x, y) = ${funcionStr}</p>
+            </div>
+            `;
+
+            html += `
+                <div class="resultado-bloque">
+                <h3>Derivadas parciales</h3>
+                <p>Primeras derivadas:</p>
+                <p>fx = <code>${fxExpr.toString()}</code></p>
+                <p>fy = <code>${fyExpr.toString()}</code></p>
+
+                <p>Segundas derivadas:</p>
+                <p>f<sub>xx</sub> = <code>${fxxExpr.toString()}</code></p>
+                <p>f<sub>yy</sub> = <code>${fyyExpr.toString()}</code></p>
+                <p>f<sub>xy</sub> = <code>${fxyExpr.toString()}</code></p>
+                </div>
+            `;
+
+            html += `
+                <div class="resultado-bloque">
                 <h3>Puntos críticos encontrados</h3>
+                <p>Se ha encontrado <trong>${puntosCriticos.length} punto(s)</trong> donde fx = 0 y fy = 0:</p>
                 <ul class="puntos-lista">
                     ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
                 </ul>
-            </div>
+                </div>
+            `;
+            html += `
+                <div class="resultado-bloque">
+                <h3>Clasificación teórica</h3>
+                <p>Se analiza el signo:</p>
+                <p><strong>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</strong></p>
+                </div>
+            `;
 
+           html += `
             <div class="resultado-bloque">
-                <h3>Construcción de g(x, y)</h3>
-                <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
-                <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
-                <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
-                <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
-                <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
-            </div>
-
-            <div class="resultado-bloque">
-                <h3>Clasificación de cada punto</h3>
+                <h3>Evaluación en cada punto</h3>
                 <ul class="puntos-lista">
                     ${puntosCriticos.map(p => {
-                        const { tipo, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
-                        let color = "";
-                        let emoji = "";
+                    const { tipo, d } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
+                    const color = tipo.includes("mínimo") ? "blue" :
+                                    tipo.includes("máximo") ? "red" :
+                                    tipo.includes("silla") ? "black" : "gray";
+                    const emoji = tipo.includes("mínimo") ? "🟦" :
+                                    tipo.includes("máximo") ? "🟥" :
+                                    tipo.includes("silla") ? "⚫" : "⚪";
 
-                        if (tipo.includes("mínimo")) {
-                            color = "color: blue; font-weight: bold;";
-                            emoji = "🟦";
-                        } else if (tipo.includes("máximo")) {
-                            color = "color: red; font-weight: bold;";
-                            emoji = "🟥";
-                        } else if (tipo.includes("silla")) {
-                            color = "color: black;";
-                            emoji = "⚫";
-                        } else {
-                            emoji = "⚪";
-                        }
-
-                        return `
-                        <li>
-                            <strong>Punto:</strong> (${p.x}, ${p.y})<br>
-                            g = ${formatearNumero(d)} ⇒ <span style="${color}">${emoji} ${tipo}</span>
-                        </li>`;
+                    return `
+                    <li>
+                        <strong>Punto:</strong> (${p.x}, ${p.y})<br>
+                        f<sub>xx</sub>(${p.x}, ${p.y}) = ${formatearNumero(fxx.evaluate(p))}<br>
+                        f<sub>yy</sub>(${p.x}, ${p.y}) = ${formatearNumero(fyy.evaluate(p))}<br>
+                        f<sub>xy</sub>(${p.x}, ${p.y}) = ${formatearNumero(fxy.evaluate(p))}<br>
+                        g = ${formatearNumero(d)} ⇒ <span style="color:${color}; font-weight: bold;">${emoji} ${tipo}</span>
+                    </li>
+                    `;
                     }).join("")}
                 </ul>
             </div>
