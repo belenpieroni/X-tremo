@@ -590,135 +590,143 @@ function analizarAbsolutos2Vars1Restriccion() {
     const fStr = sanitizarFuncion(fStrRaw);
     const gStr = sanitizarFuncion(gStrRaw);
     const resultadosTextDiv = document.getElementById("resultados");
-    resultadosTextDiv.innerHTML = "<p>Calculando...</p>";
-    
+    resultadosTextDiv.innerHTML = `
+        <p>Analizando...</p>
+        <div class="spinner"></div>
+    `;
+
+    setTimeout(() => {
+        ejecutarAnalisis(fStr, gStr, resultadosTextDiv);
+    }, 50);
+
     if (!fStr) {
-        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna función.</p>"
+        resultadosTextDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna función.</p>"
         return;
     }
     if (!gStr) {
-        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna restricción.</p>"
+        resultadosTextDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna restricción.</p>"
         return;
     }
+    function ejecutarAnalisis(fStr, gStr, resultadosTextDiv) {
+        try {
+            const fExpr = math.parse(fStr);
+            const gExpr = math.parse(gStr);
 
-    try {
-        const fExpr = math.parse(fStr);
-        const gExpr = math.parse(gStr);
+            const fxExpr = math.derivative(fExpr, 'x');
+            const fyExpr = math.derivative(fExpr, 'y');
+            const gxExpr = math.derivative(gExpr, 'x');
+            const gyExpr = math.derivative(gExpr, 'y');
 
-        const fxExpr = math.derivative(fExpr, 'x');
-        const fyExpr = math.derivative(fExpr, 'y');
-        const gxExpr = math.derivative(gExpr, 'x');
-        const gyExpr = math.derivative(gExpr, 'y');
+            const fx = fxExpr.compile();
+            const fy = fyExpr.compile();
+            const gx = gxExpr.compile();
+            const gy = gyExpr.compile();
+            const g = gExpr.compile();
+            const f = fExpr.compile();
 
-        const fx = fxExpr.compile();
-        const fy = fyExpr.compile();
-        const gx = gxExpr.compile();
-        const gy = gyExpr.compile();
-        const g = gExpr.compile();
-        const f = fExpr.compile();
+            const puntosCriticos = [];
 
-        const puntosCriticos = [];
+            for (let x = -50; x <= 50; x += 0.1) {
+                for (let y = -50; y <= 50; y += 0.1) {
+                    try {
+                        const scope = { x, y };
+                        const gxVal = gx.evaluate(scope);
+                        const gyVal = gy.evaluate(scope);
+                        if (Math.abs(gxVal) < 1e-3 && Math.abs(gyVal) < 1e-3) continue;
 
-        for (let x = -5; x <= 5; x += 0.1) {
-            for (let y = -5; y <= 5; y += 0.1) {
-                try {
-                    const scope = { x, y };
-                    const gxVal = gx.evaluate(scope);
-                    const gyVal = gy.evaluate(scope);
-                    if (Math.abs(gxVal) < 1e-3 && Math.abs(gyVal) < 1e-3) continue;
+                        const fxVal = fx.evaluate(scope);
+                        const fyVal = fy.evaluate(scope);
+                        if (Math.abs(gxVal) < 1e-5 || Math.abs(gyVal) < 1e-5) continue;
 
-                    const fxVal = fx.evaluate(scope);
-                    const fyVal = fy.evaluate(scope);
-                    if (Math.abs(gxVal) < 1e-5 || Math.abs(gyVal) < 1e-5) continue;
+                        const lambdaX = fxVal / gxVal;
+                        const lambdaY = fyVal / gyVal;
+                        const gVal = g.evaluate(scope);
 
-                    const lambdaX = fxVal / gxVal;
-                    const lambdaY = fyVal / gyVal;
-                    const gVal = g.evaluate(scope);
-
-                    if (Math.abs(lambdaX - lambdaY) < 0.05 && Math.abs(gVal) < 0.05) {
-                        const valorF = f.evaluate(scope);
-                        puntosCriticos.push({ x: Number(x.toFixed(3)), y: Number(y.toFixed(3)), fval: valorF });
+                        if (Math.abs(lambdaX - lambdaY) < 0.05 && Math.abs(gVal) < 0.05) {
+                            const valorF = f.evaluate(scope);
+                            puntosCriticos.push({ x: Number(x.toFixed(3)), y: Number(y.toFixed(3)), fval: valorF });
+                        }
+                    } catch {
+                        continue;
                     }
-                } catch {
-                    continue;
                 }
             }
-        }
 
-        let html = `
-            <div class="absolutos-bloque">
-                <h3>Funciones</h3>
-                <p><strong>Función: f(x,y):</strong> <code>${fStr}</code></p>
-                <p><strong>Restricción: g(x,y):</strong> <code>${gStr} = 0</code></p>
-            </div>
+            let html = `
+                <div class="absolutos-bloque">
+                    <h3>Funciones</h3>
+                    <p><strong>Función: f(x,y):</strong> <code>${fStr}</code></p>
+                    <p><strong>Restricción: g(x,y):</strong> <code>${gStr} = 0</code></p>
+                </div>
 
-            <div class="absolutos-bloque">
-                <h3>Gradientes</h3>
-                <p><strong>∇f:</strong> <code>(${fxExpr.toString()}) i + (${fyExpr.toString()}) j</code></p>
-                <p><strong>∇g:</strong> <code>(${gxExpr.toString()}) i + (${gyExpr.toString()}) j</code></p>
-            </div>
-        `;
+                <div class="absolutos-bloque">
+                    <h3>Gradientes</h3>
+                    <p><strong>∇f:</strong> <code>(${fxExpr.toString()}) i + (${fyExpr.toString()}) j</code></p>
+                    <p><strong>∇g:</strong> <code>(${gxExpr.toString()}) i + (${gyExpr.toString()}) j</code></p>
+                </div>
+            `;
 
-        if (puntosCriticos.length === 0) {
+            if (puntosCriticos.length === 0) {
+                html += `
+                    <div class="absolutos-bloque">
+                        <p>No se encontraron puntos que cumplan el sistema de Lagrange en el rango analizado.</p>
+                    </div>`;
+                resultadosTextDiv.innerHTML = html;
+                return;
+            }
+
+            const fvals = puntosCriticos.map(p => p.fval);
+            const minVal = Math.min(...fvals);
+            const maxVal = Math.max(...fvals);
+
             html += `
                 <div class="absolutos-bloque">
-                    <p>No se encontraron puntos que cumplan el sistema de Lagrange en el rango analizado.</p>
-                </div>`;
-            resultadosTextDiv.innerHTML = html;
-            return;
-        }
+                    <h3>Puntos críticos encontrados</h3>
+                    <ul>
+            `;
 
-        const fvals = puntosCriticos.map(p => p.fval);
-        const minVal = Math.min(...fvals);
-        const maxVal = Math.max(...fvals);
+            puntosCriticos.forEach(p => {
+                let tipo = "";
+                let tipoColor = "";
+                if (Math.abs(p.fval - maxVal) < 1e-2) {
+                    tipo = "🟥 Máximo absoluto";
+                    tipoColor = "color: red;";
+                }
+                if (Math.abs(p.fval - minVal) < 1e-2) {
+                    tipo = "🟦 Mínimo absoluto";
+                    tipoColor = "color: blue;";
+                }
+                html += `
+                    <li>
+                        <strong>(x, y)</strong> = (${p.x}, ${p.y}) &nbsp; → &nbsp; 
+                        <strong>f(x, y) = ${formatearNumero(p.fval)}</strong> 
+                        ${tipo ? `<span style="${tipoColor} font-weight: bold;">${tipo}</span>` : ""}
+                    </li>`;
+            });
 
-        html += `
-            <div class="absolutos-bloque">
-                <h3>Puntos críticos encontrados</h3>
-                <ul>
-        `;
-
-        puntosCriticos.forEach(p => {
-            let tipo = "";
-            let tipoColor = "";
-            if (Math.abs(p.fval - maxVal) < 1e-2) {
-                tipo = "🟥 Máximo absoluto";
-                tipoColor = "color: red;";
-            }
-            if (Math.abs(p.fval - minVal) < 1e-2) {
-                tipo = "🟦 Mínimo absoluto";
-                tipoColor = "color: blue;";
-            }
             html += `
-                <li>
-                    <strong>(x, y)</strong> = (${p.x}, ${p.y}) &nbsp; → &nbsp; 
-                    <strong>f(x, y) = ${formatearNumero(p.fval)}</strong> 
-                    ${tipo ? `<span style="${tipoColor} font-weight: bold;">${tipo}</span>` : ""}
-                </li>`;
-        });
+                    </ul>
+                </div>
+            `;
 
-        html += `
-                </ul>
-            </div>
-        `;
+            resultadosTextDiv.innerHTML = html;
 
-        resultadosTextDiv.innerHTML = html;
+            graficar2Var(
+                fStr,
+                puntosCriticos.map(p => ({
+                    x: p.x,
+                    y: p.y,
+                    tipo: (Math.abs(p.fval - minVal) < 1e-2) ? "mínimo" :
+                        (Math.abs(p.fval - maxVal) < 1e-2) ? "máximo" : "crítico",
+                    valor: p.fval
+                })),
+                gStr
+            );
 
-        graficar2Var(
-            fStrRaw,
-            puntosCriticos.map(p => ({
-                x: p.x,
-                y: p.y,
-                tipo: (Math.abs(p.fval - minVal) < 1e-2) ? "mínimo" :
-                      (Math.abs(p.fval - maxVal) < 1e-2) ? "máximo" : "crítico",
-                valor: p.fval
-            })),
-            gStrRaw
-        );
-
-    } catch (error) {
-        console.error("Error en Lagrange:", error);
-        resultadosTextDiv.innerHTML = "<p>Error al analizar los extremos absolutos. Verificá la sintaxis.</p>";
+        } catch (error) {
+            console.error("Error en Lagrange:", error);
+            resultadosTextDiv.innerHTML = "<p>Error al analizar los extremos absolutos. Verificá la sintaxis.</p>";
+        }
     }
 }
 
@@ -730,119 +738,158 @@ function analizarAbsolutos3Vars2Restricciones() {
     const gStr = sanitizarFuncion(gRaw);
     const hStr = sanitizarFuncion(hRaw);
     const resultadosDiv = document.getElementById("resultados");
-    resultadosDiv.innerHTML = "<p>Calculando...</p>";
+    resultadosDiv.innerHTML = `
+        <p>Analizando...</p>
+        <div class="spinner"></div>
+    `;
+    setTimeout(() => {
+        ejecutarAnalisis3Vars(fStr, gStr, hStr, resultadosDiv);
+    }, 50);
 
-    if (!fStr) {
-        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna función.</p>"
+    if (!fStr || !gStr || !hStr) {
+        resultadosDiv.innerHTML = `
+            <p> ⚠️ ${!fStr ? "No se ingresó ninguna función." : !gStr ? "No se ingresó la primera restricción." : "No se ingresó la segunda restricción."}</p>
+        `;
         return;
     }
-    if (!gStr) {
-        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó la primera restricción.</p>"
-        return;
-    }
-    if (!hStr) {
-        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó la segunda restricción.</p>"
-        return;
-    }
+    function ejecutarAnalisis3Vars(fStr, gStr, hStr, resultadosDiv) {
+        try {
+            const fExpr = math.parse(fStr);
+            const gExpr = math.parse(gStr);
+            const hExpr = math.parse(hStr);
 
-    try {
-        const fExpr = math.parse(fStr);
-        const gExpr = math.parse(gStr);
-        const hExpr = math.parse(hStr);
+            const fxExpr = math.derivative(fExpr, "x");
+            const fyExpr = math.derivative(fExpr, "y");
+            const fzExpr = math.derivative(fExpr, "z");
 
-        const fxExpr = math.derivative(fExpr, "x");
-        const fyExpr = math.derivative(fExpr, "y");
-        const fzExpr = math.derivative(fExpr, "z");
+            const gxExpr = math.derivative(gExpr, "x");
+            const gyExpr = math.derivative(gExpr, "y");
+            const gzExpr = math.derivative(gExpr, "z");
 
-        const gxExpr = math.derivative(gExpr, "x");
-        const gyExpr = math.derivative(gExpr, "y");
-        const gzExpr = math.derivative(gExpr, "z");
+            const hxExpr = math.derivative(hExpr, "x");
+            const hyExpr = math.derivative(hExpr, "y");
+            const hzExpr = math.derivative(hExpr, "z");
 
-        const hxExpr = math.derivative(hExpr, "x");
-        const hyExpr = math.derivative(hExpr, "y");
-        const hzExpr = math.derivative(hExpr, "z");
-
-        // Definimos el sistema de ecuaciones
-        function sistema(vars) {
-            const [x, y, z, mu, lambda] = vars;
-            return [
-                fxExpr.evaluate({x, y, z}) - mu * gxExpr.evaluate({x, y, z}) - lambda * hxExpr.evaluate({x, y, z}),
-                fyExpr.evaluate({x, y, z}) - mu * gyExpr.evaluate({x, y, z}) - lambda * hyExpr.evaluate({x, y, z}),
-                fzExpr.evaluate({x, y, z}) - mu * gzExpr.evaluate({x, y, z}) - lambda * hzExpr.evaluate({x, y, z}),
-                gExpr.evaluate({x, y, z}),
-                hExpr.evaluate({x, y, z})
-            ];
-        }
-
-        // Método Newton-Raphson multivariable
-        function newtonRaphsonSystem(f, x0, tol = 1e-8, maxIter = 100) {
-            let x = x0;
-            for (let iter = 0; iter < maxIter; iter++) {
-                const fx = f(x);
-                const norm = Math.sqrt(fx.reduce((sum, val) => sum + val*val, 0));
-                if (norm < tol) return x;
-
-                // Aproximamos la Jacobiana numéricamente
-                const J = [];
-                const h = 1e-6;
-                for (let i = 0; i < x.length; i++) {
-                    const xh1 = x.slice();
-                    const xh2 = x.slice();
-                    xh1[i] += h;
-                    xh2[i] -= h;
-                    const df = f(xh1).map((val, idx) => (val - f(xh2)[idx]) / (2*h));
-                    J.push(df);
-                }
-
-                const JT = math.transpose(J);
-                const delta = math.lusolve(JT, math.multiply(-1, fx));
-
-                x = x.map((xi, idx) => xi + delta[idx][0]);
+            // Definimos el sistema de ecuaciones
+            function sistema(vars) {
+                const [x, y, z, mu, lambda] = vars;
+                return [
+                    fxExpr.evaluate({x, y, z}) - mu * gxExpr.evaluate({x, y, z}) - lambda * hxExpr.evaluate({x, y, z}),
+                    fyExpr.evaluate({x, y, z}) - mu * gyExpr.evaluate({x, y, z}) - lambda * hyExpr.evaluate({x, y, z}),
+                    fzExpr.evaluate({x, y, z}) - mu * gzExpr.evaluate({x, y, z}) - lambda * hzExpr.evaluate({x, y, z}),
+                    gExpr.evaluate({x, y, z}),
+                    hExpr.evaluate({x, y, z})
+                ];
             }
-            throw new Error("No converge");
-        }
 
-        // Intentamos con un guess razonable
-        const guess = [8, 16, 8, 1, 1];
-        const sol = newtonRaphsonSystem(sistema, guess);
+            // Método Newton-Raphson multivariable
+            function newtonRaphsonSystem(f, x0, tol = 1e-8, maxIter = 100) {
+                let x = x0;
+                for (let iter = 0; iter < maxIter; iter++) {
+                    const fx = f(x);
+                    const norm = Math.sqrt(fx.reduce((sum, val) => sum + val*val, 0));
+                    if (norm < tol) return x;
 
-        const [x, y, z, mu, lambda] = sol;
-        const valorF = fExpr.evaluate({ x, y, z });
-        const sistemaHtml = `
+                    // Aproximamos la Jacobiana numéricamente
+                    const J = [];
+                    const h = 1e-6;
+                    for (let i = 0; i < x.length; i++) {
+                        const xh1 = x.slice();
+                        const xh2 = x.slice();
+                        xh1[i] += h;
+                        xh2[i] -= h;
+                        const df = f(xh1).map((val, idx) => (val - f(xh2)[idx]) / (2*h));
+                        J.push(df);
+                    }
+
+                    const JT = math.transpose(J);
+                    const delta = math.lusolve(JT, math.multiply(-1, fx));
+
+                    x = x.map((xi, idx) => xi + delta[idx][0]);
+                }
+                throw new Error("No converge");
+            }
+
+            // Intentamos con un guess razonable
+            const guess = [8, 16, 8, 1, 1];
+            const sol = newtonRaphsonSystem(sistema, guess);
+
+            const [x, y, z, mu, lambda] = sol;
+            const valorF = fExpr.evaluate({ x, y, z });
+            const teoremaHtml = `
             <div class="absolutos-bloque">
-            <h3>Sistema de Ecuaciones de Lagrange</h3>
-            <p>
-                Sistema de ecuaciones:
-            </p>
-            <ul>
-                <li>fx = μ · gx + λ · hx → <code>${fxExpr.toString()} = μ · ${gxExpr.toString()} + λ · ${hxExpr.toString()}</code></li>
-                <li>fy = μ · gy + λ · hy → <code>${fyExpr.toString()} = μ · ${gyExpr.toString()} + λ · ${hyExpr.toString()}</code></li>
-                <li>fz = μ · gz + λ · hz → <code>${fzExpr.toString()} = μ · ${gzExpr.toString()} + λ · ${hzExpr.toString()}</code></li>
-                <li><code>${gExpr.toString()} = 0</code> (primera restricción)</li>
-                <li><code>${hExpr.toString()} = 0</code> (segunda restricción)</li>
-            </ul>
+                <h3>Teorema de los Multiplicadores de Lagrange</h3>
+                <p style="text-align:center; font-size: 1.1em;">
+                    <strong>∇f = μ ∇g + λ ∇h</strong>
+                </p>
+                <p>
+                    El gradiente de <code>f</code> debe ser combinación lineal de los gradientes de las restricciones.
+                </p>
+            </div>
+            `;
+            const sistemaSimbolicoHtml = `
+            <div class="absolutos-bloque">
+                <h3>Sistema de Ecuaciones (Simbólico)</h3>
+                <ul>
+                    <li><code>fx = μ·gx + λ·hx</code></li>
+                    <li><code>fy = μ·gy + λ·hy</code></li>
+                    <li><code>fz = μ·gz + λ·hz</code></li>
+                    <li><code>g(x, y, z) = 0</code> (primera restricción)</li>
+                    <li><code>h(x, y, z) = 0</code> (segunda restricción)</li>
+                </ul>
+            </div>
+            `;
+            const derivadasHtml = `
+            <div class="absolutos-bloque">
+                <h3>Derivadas Parciales</h3>
+                <p>f(x,y,z)= <code>${fExpr.toString()}</code></p>
+                <ul>
+                    <li><strong>fx:</strong> <code>${fxExpr.toString()}</code></li>
+                    <li><strong>fy:</strong> <code>${fyExpr.toString()}</code></li>
+                    <li><strong>fz:</strong> <code>${fzExpr.toString()}</code></li>
+                </ul>
+                <p>g(x,y,z)=<code>${gExpr.toString()}</code></p>
+                <ul>
+                    <li><strong>gx:</strong> <code>${gxExpr.toString()}</code></li>
+                    <li><strong>gy:</strong> <code>${gyExpr.toString()}</code></li>
+                    <li><strong>gz:</strong> <code>${gzExpr.toString()}</code></li>
+                </ul>
+                <p>h(x,y,z)=<code>${hExpr.toString()}</code></p>
+                <ul>
+                    <li><strong>hx:</strong> <code>${hxExpr.toString()}</code></li>
+                    <li><strong>hy:</strong> <code>${hyExpr.toString()}</code></li>
+                    <li><strong>hz:</strong> <code>${hzExpr.toString()}</code></li>
+                </ul>
+            </div>
+            `;
+            const sistemaHtml = `
+            <div class="absolutos-bloque">
+                <h3>Sistema de Ecuaciones (Reemplazo)</h3>
+                <ul>
+                    <li><code>${fxExpr.toString()} = μ · ${gxExpr.toString()} + λ · ${hxExpr.toString()}</code></li>
+                    <li><code>${fyExpr.toString()}  = μ · ${gyExpr.toString()} + λ · ${hyExpr.toString()}</code></li>
+                    <li><code>${fzExpr.toString()} = μ · ${gzExpr.toString()} + λ · ${hzExpr.toString()}</code></li>
+                    <li><code>${gExpr.toString()} = 0</code></li>
+                    <li><code>${hExpr.toString()} = 0</code></li>
+                </ul>
             </div>
             `;
 
-        const resultadoHtml = `
+            const resultadoHtml = `
             <div class="absolutos-bloque">
                 <h3>Resultado del Análisis</h3>
                 <p><strong>Punto:</strong> <code>(x, y, z) = (${formatearNumero(x)}, ${formatearNumero(y)}, ${formatearNumero(z)})</code></p>
                 <h3><strong>Multiplicadores de Lagrange:</strong></h3>
-                <p>
-                    μ = <span style="color: var(--relativo-primario); font-weight: 600;">${formatearNumero(mu)}</span>, 
-                    λ = <span style="color: var(--relativo-primario); font-weight: 600;">${formatearNumero(lambda)}</span>
-                </p>
-                <p><strong>Valor de la función:</strong> 
-                    <span>f(x, y, z) = ${formatearNumero(valorF)}</span>
-                </p>
+                <p>μ = <span style="color: var(--relativo-primario); font-weight: 600;">${formatearNumero(mu)}</span>, 
+                λ = <span style="color: var(--relativo-primario); font-weight: 600;">${formatearNumero(lambda)}</span></p>
+                <p><strong>Valor de la función:</strong> f(x, y, z) = ${formatearNumero(valorF)}</p>
             </div>
-        `;
-        
-        resultadosDiv.innerHTML = sistemaHtml + resultadoHtml;
+            `;  
+            resultadosDiv.innerHTML = teoremaHtml + sistemaSimbolicoHtml + derivadasHtml + sistemaHtml + resultadoHtml;
 
-    } catch (error) {
-        console.error(error);
-        resultadosDiv.innerHTML = "<p>Error al resolver. Verificá la sintaxis de entrada.</p>";
+        } catch (error) {
+            console.error(error);
+            resultadosDiv.innerHTML = "<p>Error al resolver. Verificá la sintaxis de entrada.</p>";
+        }
     }
 }
