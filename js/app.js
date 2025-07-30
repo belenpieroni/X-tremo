@@ -355,231 +355,239 @@ function analizarRelativos1Var() {
     const funcionStr = mathField?.getValue()?.trim() ?? "";
 
     const resultadosDiv = document.getElementById("resultados");
-    resultadosDiv.innerHTML = "<p>Calculando...</p>";
+    resultadosDiv.innerHTML = `
+        <p>Analizando...</p>
+        <div class="spinner"></div>
+    `;
+    setTimeout(() => {
+        ejecutarRelativos(funcionStr, resultadosDiv);
+    }, 50);
 
     if (!funcionStr) {
         resultadosDiv.innerHTML = "<p>⚠️ No se ingresó ninguna función</p>";
         return;
     }
+    function ejecutarRelativos(funcionStr, resultadosDiv){
+        try {
+            const expr = math.parse(funcionStr);
+            const f = expr.compile();
 
-    try {
-        const expr = math.parse(funcionStr);
-        const f = expr.compile();
+            // Derivada primera
+            const derivada1 = math.derivative(expr, 'x').toString();
+            const derivada1Expr = math.parse(derivada1);
+            const f1 = derivada1Expr.compile();
 
-        // Derivada primera
-        const derivada1 = math.derivative(expr, 'x').toString();
-        const derivada1Expr = math.parse(derivada1);
-        const f1 = derivada1Expr.compile();
+            // Derivada segunda
+            const derivada2 = math.derivative(derivada1Expr, 'x').toString();
+            const derivada2Expr = math.parse(derivada2);
+            const f2 = derivada2Expr.compile();
 
-        // Derivada segunda
-        const derivada2 = math.derivative(derivada1Expr, 'x').toString();
-        const derivada2Expr = math.parse(derivada2);
-        const f2 = derivada2Expr.compile();
+            // Calcular puntos críticos (donde f'(x)=0)
+            const puntosCriticos = encontrarCeros(f1);
 
-        // Calcular puntos críticos (donde f'(x)=0)
-        const puntosCriticos = encontrarCeros(f1);
+            // Analizar máximos/mínimos usando segunda derivada
+            let analisis = "";
+            let explicacion = "";
+            const puntosGraficar = [];
 
-        // Analizar máximos/mínimos usando segunda derivada
-        let analisis = "";
-        let explicacion = "";
-        const puntosGraficar = [];
+            if (puntosCriticos.length === 0) {
+                explicacion = "No hay puntos críticos puesto que la derivada nunca se anula.";
+            } else {
+                puntosCriticos.forEach(x => {
+                    const valorSegunda = f2.evaluate({ x });
+                    const fx = f.evaluate({ x });
+                    let tipo = "";
+                    if (valorSegunda > 0) {
+                        tipo = "mínimo";
+                        explicacion += `Como la segunda derivada es positiva en x = ${formatearNumero(x)}, se trata de un mínimo.<br>`;
+                    } else if (valorSegunda < 0) {
+                        tipo = "máximo";
+                        explicacion += `Como la segunda derivada es negativa en x = ${formatearNumero(x)}, se trata de un máximo.<br>`;
+                    } else {
+                        tipo = "punto de inflexión";
+                        explicacion += `Como la segunda derivada es cero en x = ${formatearNumero(x)}, puede ser un punto de inflexión.<br>`;
+                    }
 
-        if (puntosCriticos.length === 0) {
-            explicacion = "No hay puntos críticos puesto que la derivada nunca se anula.";
-        } else {
-            puntosCriticos.forEach(x => {
-                const valorSegunda = f2.evaluate({ x });
-                const fx = f.evaluate({ x });
-                let tipo = "";
-                if (valorSegunda > 0) {
-                    tipo = "mínimo";
-                    explicacion += `Como la segunda derivada es positiva en x = ${formatearNumero(x)}, se trata de un mínimo.<br>`;
-                } else if (valorSegunda < 0) {
-                    tipo = "máximo";
-                    explicacion += `Como la segunda derivada es negativa en x = ${formatearNumero(x)}, se trata de un máximo.<br>`;
-                } else {
-                    tipo = "punto de inflexión";
-                    explicacion += `Como la segunda derivada es cero en x = ${formatearNumero(x)}, puede ser un punto de inflexión.<br>`;
-                }
+                    analisis += `<li>${tipo} en (${formatearNumero(x)}, ${formatearNumero(fx)}) [f''(${formatearNumero(x)}) = ${formatearNumero(valorSegunda)}]</li>`;
+                    puntosGraficar.push({ x, y: fx, tipo });
+                });
 
-                analisis += `<li>${tipo} en (${formatearNumero(x)}, ${formatearNumero(fx)}) [f''(${formatearNumero(x)}) = ${formatearNumero(valorSegunda)}]</li>`;
-                puntosGraficar.push({ x, y: fx, tipo });
-            });
+                // Resumen corto para máximos y mínimos
+                const maximos = puntosGraficar.filter(p => p.tipo === "máximo").map(p => formatearNumero(p.x)).join(" y ");
+                const minimos = puntosGraficar.filter(p => p.tipo === "mínimo").map(p => formatearNumero(p.x)).join(" y ");
 
-            // Resumen corto para máximos y mínimos
-            const maximos = puntosGraficar.filter(p => p.tipo === "máximo").map(p => formatearNumero(p.x)).join(" y ");
-            const minimos = puntosGraficar.filter(p => p.tipo === "mínimo").map(p => formatearNumero(p.x)).join(" y ");
+                if (minimos) explicacion += `La función tiene un mínimo en x = ${minimos}.<br>`;
+                if (maximos) explicacion += `La función tiene un máximo en x = ${maximos}.<br>`;
+            }
 
-            if (minimos) explicacion += `La función tiene un mínimo en x = ${minimos}.<br>`;
-            if (maximos) explicacion += `La función tiene un máximo en x = ${maximos}.<br>`;
+            // MOSTRAR RESULTADOS
+            resultadosDiv.innerHTML = `
+                <div class="resultado-bloque">
+                    <h3>Función</h3>
+                    <p><code>f(x) = ${funcionStr}</code></p>
+                </div>
+
+                <div class="resultado-bloque">
+                    <h3>Derivadas</h3>
+                    <p><strong>Primera derivada:</strong> <code>${derivada1}</code></p>
+                    <p><strong>Segunda derivada:</strong> <code>${derivada2}</code></p>
+                </div>
+
+                <div class="resultado-bloque">
+                    <h3>Análisis</h3>
+                    <p>${explicacion}</p>
+                </div>
+
+                <div class="resultado-bloque">
+                    <h3>Puntos críticos</h3>
+                    ${puntosCriticos.length > 0 ? "<ul class='puntos-lista'>" + analisis + "</ul>" : "<p>No se encontraron puntos críticos.</p>"}
+                </div>
+            `;
+
+            graficarFuncion(f, funcionStr, puntosGraficar);
+
+        } catch (error) {
+            console.error(error);
+            resultadosDiv.innerHTML = "<p>Error al analizar la función. Verifica la expresión ingresada.</p>";
         }
-
-        // MOSTRAR RESULTADOS
-        resultadosDiv.innerHTML = `
-            <div class="resultado-bloque">
-                <h3>Función</h3>
-                <p><code>f(x) = ${funcionStr}</code></p>
-            </div>
-
-            <div class="resultado-bloque">
-                <h3>Derivadas</h3>
-                <p><strong>Primera derivada:</strong> <code>${derivada1}</code></p>
-                <p><strong>Segunda derivada:</strong> <code>${derivada2}</code></p>
-            </div>
-
-            <div class="resultado-bloque">
-                <h3>Análisis</h3>
-                <p>${explicacion}</p>
-            </div>
-
-            <div class="resultado-bloque">
-                <h3>Puntos críticos</h3>
-                ${puntosCriticos.length > 0 ? "<ul class='puntos-lista'>" + analisis + "</ul>" : "<p>No se encontraron puntos críticos.</p>"}
-            </div>
-        `;
-
-        graficarFuncion(f, funcionStr, puntosGraficar);
-
-    } catch (error) {
-        console.error(error);
-        resultadosDiv.innerHTML = "<p>Error al analizar la función. Verifica la expresión ingresada.</p>";
     }
 }
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 2 VARIABLES */
 function analizarRelativos2Var() {
-    const mathField = document.getElementById("funcionxy");
-    const funcionRaw = mathField?.getValue()?.trim() ?? "";
-    const funcionStr = sanitizarFuncion(funcionRaw);
+    const fStrRaw = document.getElementById("funcionxy").getValue().trim().replace("=0", "");
+    const funcionStr = sanitizarFuncion(fStrRaw);
     const resultadosDiv = document.getElementById("resultados");
-    resultadosDiv.innerHTML = "<p>Calculando...</p>";
+    resultadosDiv.innerHTML = `
+        <p>Analizando...</p>
+        <div class="spinner"></div>
+    `;
+    setTimeout(() => {
+        ejecutarRelativos2(funcionStr, resultadosDiv);
+    }, 50);
 
     if (!funcionStr) {
         resultadosDiv.innerHTML = "<p>⚠️ No se ingresó ninguna función</p>";
         return;
     }
 
-    // Si contiene un '=', asumimos formato tipo 'f(x,y) = expresión'
-    if (funcionStr.includes('=')) {
-        const partes = funcionStr.split('=');
-        funcionStr = partes[1]?.trim();
-    }
+    function ejecutarRelativos2 (funcionStr, resultadosDiv){
+        try {
+            const fExpr = math.parse(funcionStr);
 
-    try {
-        const fExpr = math.parse(funcionStr);
+            // Derivadas parciales y segundas
+            const fxExpr = math.derivative(fExpr, 'x');
+            const fyExpr = math.derivative(fExpr, 'y');
+            const fxxExpr = math.derivative(fxExpr, 'x');
+            const fyyExpr = math.derivative(fyExpr, 'y');
+            const fxyExpr = math.derivative(fxExpr, 'y');
 
-        // Derivadas parciales y segundas
-        const fxExpr = math.derivative(fExpr, 'x');
-        const fyExpr = math.derivative(fExpr, 'y');
-        const fxxExpr = math.derivative(fxExpr, 'x');
-        const fyyExpr = math.derivative(fyExpr, 'y');
-        const fxyExpr = math.derivative(fxExpr, 'y');
+            const fx = fxExpr.compile();
+            const fy = fyExpr.compile();
+            const fxx = fxxExpr.compile();
+            const fyy = fyyExpr.compile();
+            const fxy = fxyExpr.compile();
+            const f = math.compile(funcionStr);
 
-        const fx = fxExpr.compile();
-        const fy = fyExpr.compile();
-        const fxx = fxxExpr.compile();
-        const fyy = fyyExpr.compile();
-        const fxy = fxyExpr.compile();
-        const f = math.compile(funcionStr);
+            const puntosCriticos = [];
 
-        const puntosCriticos = [];
-
-        // Escaneo de grilla
-        for (let x = -3; x <= 3; x += 0.1) {
-            for (let y = -3; y <= 3; y += 0.1) {
-                try {
-                    const fxVal = fx.evaluate({ x, y });
-                    const fyVal = fy.evaluate({ x, y });
-                    if (Math.abs(fxVal) < 1e-2 && Math.abs(fyVal) < 1e-2) {
-                        const xR = Number(x.toFixed(3));
-                        const yR = Number(y.toFixed(3));
-                        if (!puntosCriticos.some(p => Math.abs(p.x - xR) < 1e-3 && Math.abs(p.y - yR) < 1e-3)) {
-                            puntosCriticos.push({ x: xR, y: yR });
+            // Escaneo de grilla
+            for (let x = -3; x <= 3; x += 0.1) {
+                for (let y = -3; y <= 3; y += 0.1) {
+                    try {
+                        const fxVal = fx.evaluate({ x, y });
+                        const fyVal = fy.evaluate({ x, y });
+                        if (Math.abs(fxVal) < 1e-2 && Math.abs(fyVal) < 1e-2) {
+                            const xR = Number(x.toFixed(3));
+                            const yR = Number(y.toFixed(3));
+                            if (!puntosCriticos.some(p => Math.abs(p.x - xR) < 1e-3 && Math.abs(p.y - yR) < 1e-3)) {
+                                puntosCriticos.push({ x: xR, y: yR });
+                            }
                         }
-                    }
-                } catch { /* ignorar errores */ }
+                    } catch { /* ignorar errores */ }
+                }
             }
-        }
 
-        // Construcción de salida
-        let html = `
-        <div class="resultado-bloque">
-            <h3>Función</h3>
-            <p>f(x, y) = ${funcionStr}</p>
-        </div>
+            // Construcción de salida
+            let html = `
+            <div class="resultado-bloque">
+                <h3>Función</h3>
+                <p>f(x, y) = ${funcionStr}</p>
+            </div>
 
-        <div class="resultado-bloque">
-            <h3>Primeras Derivadas</h3>
-            <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
-            <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
-        </div>
-        `;
+            <div class="resultado-bloque">
+                <h3>Primeras Derivadas</h3>
+                <p>∂f/∂x = ${fxExpr.toString()} = 0</p>
+                <p>∂f/∂y = ${fyExpr.toString()} = 0</p>
+            </div>
+            `;
 
-        if (puntosCriticos.length === 0) {
+            if (puntosCriticos.length === 0) {
+                html += `
+                <div class="resultado-bloque">
+                    <p>No se encontraron puntos críticos.</p>
+                </div>`;
+                resultadosDiv.innerHTML = html;
+                return;
+            }
+
             html += `
             <div class="resultado-bloque">
-                <p>No se encontraron puntos críticos.</p>
-            </div>`;
+                <h3>Puntos críticos encontrados</h3>
+                <ul class="puntos-lista">
+                    ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
+                </ul>
+            </div>
+
+            <div class="resultado-bloque">
+                <h3>Construcción de g(x, y)</h3>
+                <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
+                <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
+                <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
+                <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
+                <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
+            </div>
+
+            <div class="resultado-bloque">
+                <h3>Clasificación de cada punto</h3>
+                <ul class="puntos-lista">
+                    ${puntosCriticos.map(p => {
+                        const { tipo, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
+                        let color = "";
+                        let emoji = "";
+
+                        if (tipo.includes("mínimo")) {
+                            color = "color: blue; font-weight: bold;";
+                            emoji = "🟦";
+                        } else if (tipo.includes("máximo")) {
+                            color = "color: red; font-weight: bold;";
+                            emoji = "🟥";
+                        } else if (tipo.includes("silla")) {
+                            color = "color: black;";
+                            emoji = "⚫";
+                        } else {
+                            emoji = "⚪";
+                        }
+
+                        return `
+                        <li>
+                            <strong>Punto:</strong> (${p.x}, ${p.y})<br>
+                            g = ${formatearNumero(d)} ⇒ <span style="${color}">${emoji} ${tipo}</span>
+                        </li>`;
+                    }).join("")}
+                </ul>
+            </div>
+            `;
+
             resultadosDiv.innerHTML = html;
-            return;
+            graficar2Var(funcionStr, puntosCriticos.map(p => ({
+                x: p.x,
+                y: p.y,
+                tipo: "punto crítico"
+            })));
+        } catch (error) {
+            resultadosDiv.innerHTML = `<p> Error al calcular: ${error.message}</p>`;
         }
-
-        html += `
-        <div class="resultado-bloque">
-            <h3>Puntos críticos encontrados</h3>
-            <ul class="puntos-lista">
-                ${puntosCriticos.map(p => `<li>(x, y) = (${p.x}, ${p.y})</li>`).join("")}
-            </ul>
-        </div>
-
-        <div class="resultado-bloque">
-            <h3>Construcción de g(x, y)</h3>
-            <p>g(x, y) = f<sub>xx</sub> · f<sub>yy</sub> − (f<sub>xy</sub>)²</p>
-            <p>f<sub>xx</sub> = ${fxxExpr.toString()}</p>
-            <p>f<sub>yy</sub> = ${fyyExpr.toString()}</p>
-            <p>f<sub>xy</sub> = ${fxyExpr.toString()}</p>
-            <p>g(x, y) = ${fxxExpr.toString()} · ${fyyExpr.toString()} − (${fxyExpr.toString()})²</p>
-        </div>
-
-        <div class="resultado-bloque">
-            <h3>Clasificación de cada punto</h3>
-            <ul class="puntos-lista">
-                ${puntosCriticos.map(p => {
-                    const { tipo, d, fxxVal } = clasificarPunto(fxx, fyy, fxy, p.x, p.y);
-                    let color = "";
-                    let emoji = "";
-
-                    if (tipo.includes("mínimo")) {
-                        color = "color: blue; font-weight: bold;";
-                        emoji = "🟦";
-                    } else if (tipo.includes("máximo")) {
-                        color = "color: red; font-weight: bold;";
-                        emoji = "🟥";
-                    } else if (tipo.includes("silla")) {
-                        color = "color: black;";
-                        emoji = "⚫";
-                    } else {
-                        emoji = "⚪";
-                    }
-
-                    return `
-                    <li>
-                        <strong>Punto:</strong> (${p.x}, ${p.y})<br>
-                        g = ${formatearNumero(d)} ⇒ <span style="${color}">${emoji} ${tipo}</span>
-                    </li>`;
-                }).join("")}
-            </ul>
-        </div>
-        `;
-
-        resultadosDiv.innerHTML = html;
-        graficar2Var(funcionStr, puntosCriticos.map(p => ({
-            x: p.x,
-            y: p.y,
-            tipo: "punto crítico"
-        })));
-    } catch (error) {
-        resultadosDiv.innerHTML = `<p> Error al calcular: ${error.message}</p>`;
     }
 }
 
@@ -589,25 +597,25 @@ function analizarAbsolutos2Vars1Restriccion() {
     const gStrRaw = document.getElementById("gxy").getValue().trim().replace("=0", "");
     const fStr = sanitizarFuncion(fStrRaw);
     const gStr = sanitizarFuncion(gStrRaw);
-    const resultadosTextDiv = document.getElementById("resultados");
-    resultadosTextDiv.innerHTML = `
+    const resultadosDiv = document.getElementById("resultados");
+    resultadosDiv.innerHTML = `
         <p>Analizando...</p>
         <div class="spinner"></div>
     `;
 
     setTimeout(() => {
-        ejecutarAnalisis(fStr, gStr, resultadosTextDiv);
+        ejecutarAnalisis(fStr, gStr, resultadosDiv);
     }, 50);
 
     if (!fStr) {
-        resultadosTextDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna función.</p>"
+        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna función.</p>"
         return;
     }
     if (!gStr) {
-        resultadosTextDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna restricción.</p>"
+        resultadosDiv.innerHTML = "<p> ⚠️ No se ingresó ninguna restricción.</p>"
         return;
     }
-    function ejecutarAnalisis(fStr, gStr, resultadosTextDiv) {
+    function ejecutarAnalisis(fStr, gStr, resultadosDiv) {
         try {
             const fExpr = math.parse(fStr);
             const gExpr = math.parse(gStr);
@@ -671,7 +679,7 @@ function analizarAbsolutos2Vars1Restriccion() {
                     <div class="absolutos-bloque">
                         <p>No se encontraron puntos que cumplan el sistema de Lagrange en el rango analizado.</p>
                     </div>`;
-                resultadosTextDiv.innerHTML = html;
+                resultadosDiv.innerHTML = html;
                 return;
             }
 
@@ -709,7 +717,7 @@ function analizarAbsolutos2Vars1Restriccion() {
                 </div>
             `;
 
-            resultadosTextDiv.innerHTML = html;
+            resultadosDiv.innerHTML = html;
 
             graficar2Var(
                 fStr,
@@ -725,7 +733,7 @@ function analizarAbsolutos2Vars1Restriccion() {
 
         } catch (error) {
             console.error("Error en Lagrange:", error);
-            resultadosTextDiv.innerHTML = "<p>Error al analizar los extremos absolutos. Verificá la sintaxis.</p>";
+            resultadosDiv.innerHTML = "<p>Error al analizar los extremos absolutos. Verificá la sintaxis.</p>";
         }
     }
 }

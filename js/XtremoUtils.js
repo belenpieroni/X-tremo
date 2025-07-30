@@ -115,6 +115,7 @@ export function sanitizarFuncion(str) {
 
   str = str.replace(/\b(sen)\b/g, 'sin');
   str = str.replace(/\b(tg)\b/g, 'tan');
+  str = str.replace(/([a-zA-Z])\s*([a-zA-Z])/g, '$1*$2');  // x y → x*y (en general)
 
   // Solo combinaciones entre x, y, z
   str = str.replace(/\b([x|y|z])\s*([x|y|z])\b/g, '$1*$2');
