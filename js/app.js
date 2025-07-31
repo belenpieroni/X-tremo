@@ -10,20 +10,25 @@ import {
 
 function limpiarRelativo1Var() {
     const campo = document.getElementById("funcionx");
-    if (campo) campo.setValue("");
+    if (campo?.setValue) campo.setValue("");
 
     const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
 
-    if (grafico) {
-        grafico.destroy();
-        grafico = null;
+    const graficoFuncion = document.getElementById("grafico-funcion");
+    if (graficoFuncion) {
+        try {
+        Plotly.purge(graficoFuncion);
+        } catch (err) {
+        console.warn("No se pudo purgar el gráfico 2D:", err);
+        }
+        graficoFuncion.innerHTML = "";
     }
 }
 
 function limpiarRelativo2Var() {
     const campoXY = document.getElementById("funcionxy");
-    if (campoXY) campoXY.setValue("");
+    if (campoXY?.setValue) campoXY.setValue("");
 
     const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
@@ -42,40 +47,44 @@ function limpiarRelativo2Var() {
 function limpiarAbsoluto2Var() {
     ["fxy", "gxy"].forEach(id => {
         const input = document.getElementById(id);
-        if (input) input.value = "";
+        if (input?.value !== undefined) input.value = "";
     });
+
     const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
+
     const grafico3D = document.getElementById("grafico-3d");
     if (grafico3D) {
         try {
-            Plotly.purge(grafico3D);  
+        Plotly.purge(grafico3D);
         } catch (err) {
-            console.warn("No se pudo purgar el gráfico 3D:", err);
+        console.warn("No se pudo purgar el gráfico 3D:", err);
         }
-        grafico3D.innerHTML = "";  
+        grafico3D.innerHTML = "";
     }
 }
-
-let grafico
 
 function limpiarAbsoluto3Var() {
     ["fxyz", "gxyz", "hxyz"].forEach(id => {
         const input = document.getElementById(id);
-        if (input) input.value = "";
+        if (input?.value !== undefined) input.value = "";
     });
+
     const resultados = document.getElementById("resultados");
     if (resultados) resultados.innerHTML = "";
+
     const grafico3D = document.getElementById("grafico-3d");
     if (grafico3D) {
         try {
-            Plotly.purge(grafico3D);  
+        Plotly.purge(grafico3D);
         } catch (err) {
-            console.warn("No se pudo purgar el gráfico 3D:", err);
+        console.warn("No se pudo purgar el gráfico 3D:", err);
         }
-        grafico3D.innerHTML = "";  
+        grafico3D.innerHTML = "";
     }
 }
+
+let grafico
 
 document.addEventListener("DOMContentLoaded", function () {
     // Header
@@ -275,6 +284,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (toggleBtn && sidebar) {
         toggleBtn.addEventListener("click", () => {
             sidebar.classList.toggle("open");
+        });
+
+        // Cierre automático al hacer clic fuera del sidebar
+        document.addEventListener("click", (event) => {
+            const clickedInside = sidebar.contains(event.target) || toggleBtn.contains(event.target);
+            if (!clickedInside && sidebar.classList.contains("open")) {
+            sidebar.classList.remove("open");
+            }
         });
     }
     

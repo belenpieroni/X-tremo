@@ -9,8 +9,8 @@
 
 /* Variables específicas Absolutos */
 :root {
-  --absoluto-primario: #FF6B4D;
-  --absoluto-secundario: #C6412C;
+  --absoluto-primario: #f78d23;
+  --absoluto-secundario: #ab4b01;
   --absoluto-fondo: #f3eeec;
   --texto-principal: #222;
   --gris-suave: #e8e8e8;
@@ -117,11 +117,17 @@ code {
   font-family: monospace;
 }
 
-/* Gráfico 3D */
+/* Gráfico */
+#grafico-container {
+  margin-top: 32px;
+  padding: 16px;
+  background-color: #fff;
+}
+
 #grafico-3d {
+  min-height: 400px; 
+  overflow: hidden;
   width: 100%;
-  height: 500px;
-  margin-top: 20px;
 }
 
 .toggle-btn {
@@ -166,8 +172,15 @@ code {
     padding: 6px 10px;
   }
 
+  /* Gráfico */
+  #grafico-container {
+    margin-top: 16px;
+    padding: 0;
+  }
+
   #grafico-3d {
-    height: 360px;
+    height: 100%;
+    width: 100%;
   }
 
   .toggle-btn {

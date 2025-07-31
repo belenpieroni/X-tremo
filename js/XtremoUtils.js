@@ -136,77 +136,90 @@ export function sanitizarFuncion(str) {
 }
 
 export function graficarFuncion(f, label, puntosCriticos = []) {
-  const divGrafico = document.getElementById("grafico-funcion");
-  if (!divGrafico) {
-    console.warn("No se encontró el contenedor de gráfico.");
-    return;
-  }
-
-  divGrafico.classList.add("activo");
-
-  const xs = [];
-  const ys = [];
-
-  for (let x = -10; x <= 10; x += 0.1) {
-    xs.push(x);
-    try {
-      const y = f.evaluate({ x });
-      ys.push(Number.isFinite(y) ? y : null);
-    } catch {
-      ys.push(null);
+    const divGrafico = document.getElementById("grafico-funcion");
+    if (!divGrafico) {
+        console.warn("No se encontró el contenedor de gráfico.");
+        return;
     }
-  }
 
-  const traceFuncion = {
-    x: xs,
-    y: ys,
-    mode: "lines",
-    type: "scatter",
-    name: label || "f(x)",
-    line: {
-      color: "#d85e00",
-      width: 2
+    divGrafico.classList.add("activo");
+
+    const xs = [];
+    const ys = [];
+
+    for (let x = -10; x <= 10; x += 0.1) {
+        xs.push(x);
+        try {
+        const y = f.evaluate({ x });
+        ys.push(Number.isFinite(y) ? y : null);
+        } catch {
+        ys.push(null);
+        }
     }
-  };
 
-  const traceCriticos = puntosCriticos.length > 0 ? {
-    x: puntosCriticos.map(p => p.x),
-    y: puntosCriticos.map(p => p.y),
-    mode: "markers+text",
-    type: "scatter",
-    name: "Puntos críticos",
-    marker: {
-      size: 8,
-      color: puntosCriticos.map(p =>
-        p.tipo === "mínimo" ? "#15b7c0" :
-        p.tipo === "máximo" ? "#d85e00" :
-        "#777777"
-      ),
-      line: {
-        width: 1,
-        color: "#333"
-      }
-    },
-    text: puntosCriticos.map(p =>
-      `${p.tipo} en (${formatearNumero(p.x)}, ${formatearNumero(p.y)})`
-    ),
-    textposition: "top center"
-  } : null;
+    const traceFuncion = {
+        x: xs,
+        y: ys,
+        mode: "lines",
+        type: "scatter",
+        name: label || "f(x)",
+        line: {
+        color: "#deaa1aff",
+        width: 2
+        }
+    };
 
-  const layout = {
-    title: label || "Gráfico de f(x)",
-    xaxis: { title: "x" },
-    yaxis: { title: "f(x)" },
-    margin: { t: 50, b: 50, l: 60, r: 30 },
-    plot_bgcolor: "rgba(0,0,0,0)",
-    paper_bgcolor: "rgba(0,0,0,0)",
-    font: { family: "Poppins, sans-serif" },
-    responsive: true
-  };
+    const traceMaximos = {
+        x: puntosCriticos.filter(p => p.tipo === "máximo").map(p => p.x),
+        y: puntosCriticos.filter(p => p.tipo === "máximo").map(p => p.y),
+        mode: "markers",
+        type: "scatter",
+        name: "Máximo local",
+        marker: {
+        size: 8,
+        color: "#be0c0cff",
+        line: { width: 1, color: "#333" }
+        },
+        hoverinfo: "x+y"
+    };
 
-  const trazas = traceCriticos ? [traceFuncion, traceCriticos] : [traceFuncion];
+    const traceMinimos = {
+        x: puntosCriticos.filter(p => p.tipo === "mínimo").map(p => p.x),
+        y: puntosCriticos.filter(p => p.tipo === "mínimo").map(p => p.y),
+        mode: "markers",
+        type: "scatter",
+        name: "Mínimo local",
+        marker: {
+        size: 8,
+        color: "#1951d6ff",
+        line: { width: 1, color: "#333" }
+        },
+        hoverinfo: "x+y"
+    };
 
-  Plotly.newPlot(divGrafico, trazas, layout, { responsive: true });
+    const layout = {
+        title: label || "Gráfico de f(x)",
+        xaxis: { title: "x" },
+        yaxis: { title: "f(x)" },
+        margin: { t: 50, b: 50, l: 60, r: 30 },
+        plot_bgcolor: "rgba(0,0,0,0)",
+        paper_bgcolor: "rgba(0,0,0,0)",
+        font: { family: "Poppins, sans-serif" },
+        responsive: true,
+        legend: {
+        orientation: "v",
+        x: 1.02,
+        y: 1,
+        font: { size: 12, color: "#333" }
+        }
+    };
+
+    const trazas = [traceFuncion];
+    if (puntosCriticos.length > 0) {
+        trazas.push(traceMaximos, traceMinimos);
+    }
+
+    Plotly.newPlot(divGrafico, trazas, layout, { responsive: true });
 }
 
 export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = null) {
@@ -334,7 +347,7 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
             type: "scatter3d",
             name: "g(x,y)=0",
             line: {
-            color: "rgba(150,150,150,0.6)",
+            color: "rgba(170, 3, 3, 0.6)",
             width: 4
             }
         };
@@ -350,14 +363,13 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
 
     const layout = {
         title: "Superficie f(x,y) y puntos críticos",
-        scene: {
-        xaxis: { title: "x" },
-        yaxis: { title: "y" },
-        zaxis: { title: "f(x,y)" }
-        },
         autosize: true,
-        height: 500
+        scene: {
+            xaxis: { title: "x" },
+            yaxis: { title: "y" },
+            zaxis: { title: "f(x,y)" },
+            aspectmode: "auto"
+        }
     };
-
     Plotly.newPlot(graficoDiv, trazas, layout);
 }
