@@ -388,8 +388,8 @@ export function mostrarGraficoConsultas({ relativos, absolutos }) {
     };
 
     const layout = {
-        title: "Consultas realizadas por tipo",
-        xaxis: { title: "Tipo de consulta" },
+        title: "¡Mira los ejercicios que se pudieron resolver!",
+        xaxis: { title: "Extremos" },
         yaxis: { title: "Cantidad" },
         margin: { t: 50, b: 50, l: 60, r: 30 }
     };

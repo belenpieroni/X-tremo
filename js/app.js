@@ -20,18 +20,18 @@ import {
 // Referencia al contador de visitas
 const visitasRef = ref(db, "contador/visitas");
 
-get(visitasRef).then((snapshot) => {
-    if (snapshot.exists()) {
-        const actual = snapshot.val();
-        set(visitasRef, actual + 1); 
-    } else {
-        set(visitasRef, 1);
-    }
-});
+if (!sessionStorage.getItem("visitaRegistrada")) {
+  get(visitasRef).then((snapshot) => {
+    const actual = snapshot.exists() ? snapshot.val() : 0;
+    set(visitasRef, actual + 1);
+    sessionStorage.setItem("visitaRegistrada", "true");
+  });
+}
+
 onValue(visitasRef, (snapshot) => {
-    const total = snapshot.val();
-    const el = document.getElementById("contador-visitas-numero");
-    if (el) el.innerText = `${total}`;
+  const total = snapshot.val();
+  const el = document.getElementById("contador-visitas-numero");
+  if (el) el.innerText = `${total}`;
 });
 
 function mostrarContadorConsultas() {
