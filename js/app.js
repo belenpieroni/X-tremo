@@ -7,14 +7,14 @@ import {
     graficarFuncion,
     encontrarCeros
 } from './XtremoUtils.js';
+import { registrarConsulta } from "./firebase-init.js";
+import { db } from "./firebase-init.js";
 import {
   ref,
   get,
   set,
   onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-import { db } from "./firebase-init.js";
 
 // Referencia al contador de visitas
 const visitasRef = ref(db, "contador/visitas");
@@ -32,6 +32,17 @@ onValue(visitasRef, (snapshot) => {
   const el = document.getElementById("contador-visitas-numero");
   if (el) el.innerText = `${total}`;
 });
+
+function mostrarContadorConsultas() {
+  const consultasRef = ref(db, "contador/consultas");
+  const span = document.getElementById("contador-consultas-numero");
+
+  onValue(consultasRef, (snapshot) => {
+    const data = snapshot.val();
+    const total = Object.values(data || {}).reduce((acc, val) => acc + val, 0);
+    span.textContent = total.toLocaleString();
+  });
+}
 
 function limpiarRelativo1Var() {
     const campo = document.getElementById("funcionx");
@@ -128,6 +139,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnAbsolutos = document.getElementById("btn-absolutos");
     const contenido = document.getElementById("contenido-principal");
 
+    mostrarContadorConsultas(); 
+
     function cargarContenido(ruta) {
         if (grafico) {
                 grafico.destroy();
@@ -215,8 +228,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.preventDefault();
                 const modo3vars = document.getElementById("modoAbs2vars")?.checked ?? false;
                 if (modo3vars) {
+                    registrarConsulta("absolutos3var");
                     analizarAbsolutos3Vars2Restricciones();
                 } else {
+                    registrarConsulta("absolutos2var");
                     analizarAbsolutos2Vars1Restriccion();
                 }
                 });
@@ -275,8 +290,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 btnAnalizar.addEventListener("click", function () {
                     const modo2vars = document.getElementById("modoRel2vars")?.checked ?? false;
                     if (modo2vars) {
+                        registrarConsulta("relativos2var");
                         analizarRelativos2Var();
                     } else {
+                        registrarConsulta("relativos1var");
                         analizarRelativos1Var();
                     }
                 });

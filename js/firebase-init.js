@@ -1,6 +1,7 @@
 // firebase-init.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { ref, increment, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // Config
 const firebaseConfig = {
@@ -18,3 +19,13 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 export { db };
+
+export function registrarConsulta(tipo = "desconocida") {
+  const contadorRef = ref(db, "contador/consultas");
+
+  update(contadorRef, {
+    [tipo]: increment(1)
+  }).catch((err) => {
+    console.warn("No se pudo registrar la consulta:", err);
+  });
+}

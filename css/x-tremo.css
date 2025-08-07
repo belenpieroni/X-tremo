@@ -164,7 +164,7 @@ html {
   font-size: 1.2rem;
 }
 
-#contador-visitas-numero {
+#contador-visitas-numero, #contador-consultas-numero {
   font-size: 2rem;
   font-weight: bold;
   color: var(--fondo-base);
