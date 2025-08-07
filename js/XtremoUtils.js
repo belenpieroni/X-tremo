@@ -373,3 +373,26 @@ export function graficar2Var(funcionStr, puntosCriticos = [], restriccionStr = n
     };
     Plotly.newPlot(graficoDiv, trazas, layout);
 }
+
+export function mostrarGraficoConsultas({ relativos, absolutos }) {
+    const container = document.getElementById("grafico-consultas");
+    if (!container) return;
+
+    const trace = {
+        x: ["Relativos", "Absolutos"],
+        y: [relativos, absolutos],
+        type: "bar",
+        marker: {
+        color: ["#aa10f2", "#f78d23"]
+        }
+    };
+
+    const layout = {
+        title: "Consultas realizadas por tipo",
+        xaxis: { title: "Tipo de consulta" },
+        yaxis: { title: "Cantidad" },
+        margin: { t: 50, b: 50, l: 60, r: 30 }
+    };
+
+    Plotly.newPlot(container, [trace], layout, { responsive: true });
+}

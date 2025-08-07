@@ -5,42 +5,53 @@ import {
     graficar2Var, 
     sanitizarFuncion,
     graficarFuncion,
-    encontrarCeros
+    encontrarCeros,
+    mostrarGraficoConsultas
 } from './XtremoUtils.js';
 import { registrarConsulta } from "./firebase-init.js";
 import { db } from "./firebase-init.js";
 import {
-  ref,
-  get,
-  set,
-  onValue
+    ref,
+    get,
+    set,
+    onValue
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 // Referencia al contador de visitas
 const visitasRef = ref(db, "contador/visitas");
 
 get(visitasRef).then((snapshot) => {
-  if (snapshot.exists()) {
-    const actual = snapshot.val();
-    set(visitasRef, actual + 1); 
-  } else {
-    set(visitasRef, 1);
-  }
+    if (snapshot.exists()) {
+        const actual = snapshot.val();
+        set(visitasRef, actual + 1); 
+    } else {
+        set(visitasRef, 1);
+    }
 });
 onValue(visitasRef, (snapshot) => {
-  const total = snapshot.val();
-  const el = document.getElementById("contador-visitas-numero");
-  if (el) el.innerText = `${total}`;
+    const total = snapshot.val();
+    const el = document.getElementById("contador-visitas-numero");
+    if (el) el.innerText = `${total}`;
 });
 
 function mostrarContadorConsultas() {
-  const consultasRef = ref(db, "contador/consultas");
-  const span = document.getElementById("contador-consultas-numero");
+    const consultasRef = ref(db, "contador/consultas");
+    const span = document.getElementById("contador-consultas-numero");
 
-  onValue(consultasRef, (snapshot) => {
-    const data = snapshot.val();
-    const total = Object.values(data || {}).reduce((acc, val) => acc + val, 0);
-    span.textContent = total.toLocaleString();
+    onValue(consultasRef, (snapshot) => {
+        const data = snapshot.val();
+        const total = Object.values(data || {}).reduce((acc, val) => acc + val, 0);
+        span.textContent = total.toLocaleString();
+    });
+}
+
+function cargarConsultasTotales(callback) {
+  const refConsultas = ref(db, "contador/consultas");
+  onValue(refConsultas, (snapshot) => {
+    const data = snapshot.val() || {};
+    const relativos = data.relativos || 0;
+    const absolutos = data.absolutos || 0;
+    callback({ relativos, absolutos });
   });
 }
 
@@ -139,7 +150,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const btnAbsolutos = document.getElementById("btn-absolutos");
     const contenido = document.getElementById("contenido-principal");
 
-    mostrarContadorConsultas(); 
+    mostrarContadorConsultas();
 
     function cargarContenido(ruta) {
         if (grafico) {
@@ -228,10 +239,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 e.preventDefault();
                 const modo3vars = document.getElementById("modoAbs2vars")?.checked ?? false;
                 if (modo3vars) {
-                    registrarConsulta("absolutos3var");
+                    registrarConsulta("absolutos");
                     analizarAbsolutos3Vars2Restricciones();
                 } else {
-                    registrarConsulta("absolutos2var");
+                    registrarConsulta("absolutos");
                     analizarAbsolutos2Vars1Restriccion();
                 }
                 });
@@ -290,10 +301,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 btnAnalizar.addEventListener("click", function () {
                     const modo2vars = document.getElementById("modoRel2vars")?.checked ?? false;
                     if (modo2vars) {
-                        registrarConsulta("relativos2var");
+                        registrarConsulta("relativos");
                         analizarRelativos2Var();
                     } else {
-                        registrarConsulta("relativos1var");
+                        registrarConsulta("relativos");
                         analizarRelativos1Var();
                     }
                 });
@@ -405,7 +416,7 @@ document.addEventListener("DOMContentLoaded", function () {
             btnExportarPDF.disabled = false;
         }
     }
-
+    cargarConsultasTotales(mostrarGraficoConsultas);
 });
 
 /* CÁLCULO DE EXTREMOS RELATIVOS 1 VARIABLE*/
