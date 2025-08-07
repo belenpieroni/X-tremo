@@ -7,6 +7,31 @@ import {
     graficarFuncion,
     encontrarCeros
 } from './XtremoUtils.js';
+import {
+  ref,
+  get,
+  set,
+  onValue
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+import { db } from "./firebase-init.js";
+
+// Referencia al contador de visitas
+const visitasRef = ref(db, "contador/visitas");
+
+get(visitasRef).then((snapshot) => {
+  if (snapshot.exists()) {
+    const actual = snapshot.val();
+    set(visitasRef, actual + 1); 
+  } else {
+    set(visitasRef, 1);
+  }
+});
+onValue(visitasRef, (snapshot) => {
+  const total = snapshot.val();
+  const el = document.getElementById("contador-visitas-numero");
+  if (el) el.innerText = `${total}`;
+});
 
 function limpiarRelativo1Var() {
     const campo = document.getElementById("funcionx");

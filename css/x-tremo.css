@@ -122,7 +122,6 @@ html {
 .intro-x-tremo {
   max-width: 100%;
   background: white;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
 .intro-x-tremo h1 {
@@ -142,6 +141,34 @@ html {
 
 .intro-x-tremo a:hover {
   text-decoration: underline;
+}
+
+.marcador-x-tremo {
+  background: linear-gradient(135deg, #1e1e2f, #27293d);
+  color: #ffffff;
+  text-align: center;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 30px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  margin-bottom: 25px;
+}
+
+.marcador-x-tremo h2 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.marcador-x-tremo p {
+  font-size: 1.2rem;
+}
+
+#contador-visitas-numero {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--fondo-base);
+  text-shadow: 0 0 8px var(--resaltador);
 }
 
 .spinner {
