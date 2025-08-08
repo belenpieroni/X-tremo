@@ -5,7 +5,7 @@ import { ref, increment, update } from "https://www.gstatic.com/firebasejs/10.12
 
 // Config
 const firebaseConfig = {
-    apiKey: "AIzaSyAtOYfd8Y2iaSmCob5bEtqW9_5C_nDkqgg",
+    apiKey: "AIzaSyBW7ZynQcWxIB0JVwN0r_FtOYZTJlNRO04",
     authDomain: "x-tremo.firebaseapp.com",
     projectId: "x-tremo",
     storageBucket: "x-tremo.appspot.com", 
